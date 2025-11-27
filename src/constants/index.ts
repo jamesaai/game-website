@@ -36,18 +36,18 @@ export const SOCIAL_LINKS = [
   },
 ] as const;
 
-// Replace these with your actual gameplay video URLs
+// Local gameplay video assets served from /public/videos
 export const VIDEO_LINKS = {
   // Fire alarm system demonstrations
-  feature1: "https://YOUR-CDN.com/fire-alarm-panel.mp4", // Fire alarm control panel
-  feature2: "https://YOUR-CDN.com/pull-stations.mp4", // Pull station demonstration
-  feature3: "https://YOUR-CDN.com/notification-devices.mp4", // Horns and strobes
-  feature4: "https://YOUR-CDN.com/fire-drill.mp4", // Fire drill sequence
-  feature5: "https://YOUR-CDN.com/school-tour.mp4", // School walkthrough
-  
+  feature1: "/videos/feature-1.mp4", // Fire alarm control panel
+  feature2: "/videos/feature-2.mp4", // Pull station demonstration
+  feature3: "/videos/feature-3.mp4", // Horns and strobes
+  feature4: "/videos/feature-4.mp4", // Fire drill sequence
+  feature5: "/videos/feature-5.mp4", // School walkthrough
+
   // Hero/gameplay videos - main footage
-  hero1: "https://YOUR-CDN.com/gameplay-1.mp4", // Main gameplay loop
-  hero2: "https://YOUR-CDN.com/gameplay-2.mp4", // Classroom fire alarm
-  hero3: "https://YOUR-CDN.com/gameplay-3.mp4", // Hallway evacuation
-  hero4: "https://YOUR-CDN.com/gameplay-4.mp4", // Control room
+  hero1: "/videos/hero-1.mp4", // Main gameplay loop
+  hero2: "/videos/hero-2.mp4", // Classroom fire alarm
+  hero3: "/videos/hero-3.mp4", // Hallway evacuation
+  hero4: "/videos/hero-4.mp4", // Control room
 };
