@@ -67,8 +67,9 @@ export const Navbar = () => {
       className="fixed inset-x-0 top-4 z-50 h-16 border-none transition-all duration-700 sm:inset-x-6"
     >
       <div className="absolute top-1/2 w-full -translate-y-1/2">
-        <nav className="flex size-full items-center justify-between p-4">
-          <div className="flex items-center gap-7">
+        <div className="mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-black/40 px-4 py-2 shadow-lg backdrop-blur-md">
+          <nav className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-7">
             <Link to="/" className="transition hover:opacity-75">
               <img src="/img/logo.png" alt="Atlanta High Logo" className="w-10" />
             </Link>
@@ -82,7 +83,7 @@ export const Navbar = () => {
             </Button>
           </div>
 
-          <div className="flex h-full items-center">
+            <div className="flex h-full items-center">
             <div className="hidden md:block">
               {NAV_ITEMS.map(({ label, path }) => (
                 <NavLink
@@ -123,20 +124,46 @@ export const Navbar = () => {
                       style={{ animationDelay: `${(i + 1) * 0.1}s` }}
                     />
                   ))}
-              </button>
 
-              <a
-                href={LINKS.robloxGame}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="transition hover:opacity-75"
-                title="Play on Roblox"
-              >
-                <SiRoblox className="size-5 text-white" />
-              </a>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={toggleAudioIndicator}
+                  className="ml-10 flex items-center space-x-1 p-2 transition hover:opacity-75"
+                  title="Play Ambient Sound"
+                >
+                  <audio
+                    ref={audioElementRef}
+                    src="/audio/loop.mp3"
+                    className="hidden"
+                    loop
+                  />
+
+                  {Array(4)
+                    .fill("")
+                    .map((_, i) => (
+                      <div
+                        key={i + 1}
+                        className={cn(
+                          "indicator-line",
+                          isIndicatorActive && "active"
+                        )}
+                        style={{ animationDelay: `${(i + 1) * 0.1}s` }}
+                      />
+                    ))}
+                </button>
+
+                <a
+                  href={LINKS.robloxGame}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="transition hover:opacity-75"
+                >
+                  <SiRoblox size={24} />
+                </a>
+              </div>
             </div>
-          </div>
-        </nav>
+          </nav>
+        </div>
       </div>
     </header>
   );

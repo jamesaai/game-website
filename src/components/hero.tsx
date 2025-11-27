@@ -102,37 +102,16 @@ export const Hero = () => {
   useEffect(() => {
     const fetchPlayerCount = async () => {
       try {
-        const url = new URL(LINKS.robloxGame);
-        const placeIdMatch = url.pathname.match(/\/games\/(\d+)/);
-        const placeId = placeIdMatch?.[1];
-        if (!placeId) {
+        const resp = await fetch(
+          "https://games.roblox.com/v1/games?universeIds=8107420919"
+        );
+        if (!resp.ok) {
           setIsPlayerCountLoading(false);
           return;
         }
 
-        const placeResp = await fetch(
-          `https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId}`
-        );
-        if (!placeResp.ok) {
-          setIsPlayerCountLoading(false);
-          return;
-        }
-        const placeData: Array<{ universeId: number }> = await placeResp.json();
-        const universeId = placeData[0]?.universeId;
-        if (!universeId) {
-          setIsPlayerCountLoading(false);
-          return;
-        }
-
-        const gameResp = await fetch(
-          `https://games.roblox.com/v1/games?universeIds=${universeId}`
-        );
-        if (!gameResp.ok) {
-          setIsPlayerCountLoading(false);
-          return;
-        }
-        const gameData: { data: Array<{ playing: number }> } = await gameResp.json();
-        const playing = gameData.data?.[0]?.playing;
+        const data: { data: Array<{ playing: number }> } = await resp.json();
+        const playing = data.data?.[0]?.playing;
         if (typeof playing === "number") {
           setPlayerCount(playing);
         }
