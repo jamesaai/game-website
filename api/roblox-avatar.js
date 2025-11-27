@@ -37,9 +37,9 @@ export default async function handler(req, res) {
       throw new Error('User ID not found in response');
     }
 
-    // Then, get avatar headshot
+    // Then, get 3D avatar
     const avatarResponse = await fetch(
-      `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${userData.id}&size=420x420&format=Png&isCircular=false`
+      `https://thumbnails.roblox.com/v1/users/avatar-3d?userId=${userData.id}&size=420x420&format=Png&captureSide=Front`
     );
 
     if (!avatarResponse.ok) {
