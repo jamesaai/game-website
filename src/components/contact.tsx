@@ -20,7 +20,7 @@ export const Contact = () => {
 
   return (
     <section id="contact" className="my-20 min-h-96 w-screen px-10">
-      <div className="relative rounded-lg bg-black py-24 text-blue-50 sm:overflow-hidden">
+      <div className="relative rounded-lg bg-gradient-to-b from-gray-900 via-black to-black py-24 text-blue-50 sm:overflow-hidden">
         <div className="absolute -left-20 top-0 hidden h-full w-72 overflow-hidden sm:block lg:left-20 lg:w-96">
           <ImageClipBox
             src="/img/contact-1.webp"
@@ -49,8 +49,8 @@ export const Contact = () => {
           />
         </div>
 
-        <div className="flex flex-col items-center text-center">
-          <p className="font-general text-[10px] uppercase">Join Our Community</p>
+        <div className="relative z-10 flex flex-col items-center text-center">
+          <p className="font-circular-web text-[10px] uppercase tracking-widest text-blue-50/60">Join Our Community</p>
 
           <p className="special-font mt-10 w-full font-zentry text-5xl leading-[0.9] md:text-[6rem]">
             Join th<b>o</b>usands of
@@ -58,7 +58,7 @@ export const Contact = () => {
           </p>
 
           <Button
-            containerClass="mt-10 cursor-pointer bg-blue-500 px-6 py-3 rounded-lg text-white hover:bg-blue-600 transition"
+            containerClass="mt-10 cursor-pointer bg-blue-600 px-8 py-3 rounded-lg text-white hover:bg-blue-700 transition"
             onClick={handleJoinDiscord}
           >
             Join Discord

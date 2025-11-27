@@ -53,7 +53,7 @@ export const Features = () => (
     <div className="container mx-auto px-3 md:px-10">
       <div className="px-5 py-32">
         <p className="font-circular-web text-lg text-blue-50">Fire Alarm Systems & Features</p>
-        <p className="max-w-md font-circular-web text-lg text-blue-50 opacity-50">
+        <p className="max-w-2xl font-circular-web text-lg text-blue-50/80 leading-relaxed">
           Explore authentic fire alarm systems, from pull stations to control panels. Experience realistic fire drills and emergency scenarios in our detailed simulation.
         </p>
       </div>

@@ -15,6 +15,8 @@ export const Hero = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [playerCount, setPlayerCount] = useState<number | null>(null);
+  const [visits, setVisits] = useState<number | null>(null);
+  const [favorites, setFavorites] = useState<number | null>(null);
   const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
 
   const nextVideoRef = useRef<HTMLVideoElement>(null);
@@ -108,10 +110,18 @@ export const Hero = () => {
           return;
         }
 
-        const data: { data: Array<{ playing: number }> } = await resp.json();
-        const playing = data.data?.[0]?.playing;
-        if (typeof playing === "number") {
-          setPlayerCount(playing);
+        const data: { data: Array<{ playing?: number; visits?: number; favoritedCount?: number; favorites?: number }> } = await resp.json();
+        const game = data.data?.[0];
+        if (game) {
+          if (typeof game.playing === "number") setPlayerCount(game.playing);
+          if (typeof game.visits === "number") setVisits(game.visits);
+          const fav =
+            typeof game.favoritedCount === "number"
+              ? game.favoritedCount
+              : typeof game.favorites === "number"
+                ? game.favorites
+                : null;
+          if (fav !== null) setFavorites(fav);
         }
       } catch {
         // fail silently, keep fallback UI
@@ -141,11 +151,9 @@ export const Hero = () => {
       >
         {/* Background video layer */}
         <div className="absolute inset-0">
-          <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-            <div
-              onClick={handleMiniVideoClick}
-              className="origin-center scale-50 opacity-0 transition-all duration-500 ease-in hover:scale-100 hover:opacity-100"
-            >
+          {/* Hidden preview mask - disabled for cleaner UX */}
+          <div className="mask-clip-path absolute-center absolute z-50 size-64 overflow-hidden rounded-lg hidden">
+            <div className="origin-center scale-50 opacity-0">
               <video
                 ref={nextVideoRef}
                 src={getVideoSrc(upcomingVideoIndex)}
@@ -199,8 +207,9 @@ export const Hero = () => {
                 id="play-now"
                 leftIcon={TiLocationArrow}
                 containerClass="bg-red-300 text-black px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold hover:bg-red-400 transition"
+                onClick={handlePlayNow}
               >
-                <span onClick={handlePlayNow}>Play Now on Roblox</span>
+                <span>Play Now on Roblox</span>
               </Button>
 
               <Button
@@ -222,12 +231,16 @@ export const Hero = () => {
 
               <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
                 <p className="text-xs uppercase tracking-wide text-blue-100/60">Total Visits</p>
-                <p className="mt-2 text-2xl font-semibold text-blue-50">18.0M</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-50">
+                  {visits !== null ? visits.toLocaleString() : "--"}
+                </p>
               </div>
 
               <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
                 <p className="text-xs uppercase tracking-wide text-blue-100/60">Favorites</p>
-                <p className="mt-2 text-2xl font-semibold text-blue-50">98.2K</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-50">
+                  {favorites !== null ? favorites.toLocaleString() : "--"}
+                </p>
               </div>
             </div>
           </div>

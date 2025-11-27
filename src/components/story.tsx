@@ -50,9 +50,9 @@ export const Story = () => {
   };
 
   return (
-    <section id="school" className="min-h-dvh w-screen bg-black text-blue-50">
+    <section id="school" className="min-h-dvh w-screen bg-gradient-to-b from-gray-900 via-black to-black text-blue-50">
       <div className="flex size-full flex-col items-center py-10 pb-24">
-        <p className="font-general text-sm uppercase md:text-[10px]">
+        <p className="font-circular-web text-sm uppercase tracking-widest text-blue-50/60 md:text-[10px]">
           Explore the School
         </p>
 
@@ -81,9 +81,9 @@ export const Story = () => {
           </div>
         </div>
 
-        <div className="-mt-80 flex w-full justify-center md:-mt-64 md:me-44 md:justify-end">
+        <div className="-mt-80 flex w-full justify-center px-6 md:-mt-64 md:me-44 md:justify-end">
           <div className="flex h-full w-fit flex-col items-center md:items-start">
-            <p className="mt-3 max-w-sm text-center font-circular-web text-violet-50 md:text-start">
+            <p className="mt-3 max-w-md text-center font-circular-web text-blue-50/90 leading-relaxed md:text-start">
               Explore our detailed recreation of a modern high school campus.
               Every hallway, classroom, and fire safety device is accurately
               modeled to provide the most realistic training experience.
