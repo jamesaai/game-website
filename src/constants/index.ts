@@ -7,6 +7,7 @@ export const NAV_ITEMS = [
   { label: "About", path: "/about" },
   { label: "Systems", path: "/systems" },
   { label: "School", path: "/school" },
+  { label: "Staff", path: "/staff" },
   { label: "Join", path: "/join" },
 ] as const;
 

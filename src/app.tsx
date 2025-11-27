@@ -6,6 +6,7 @@ import { Features } from "@/components/features";
 import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
+import { Staff } from "@/components/staff";
 import { Story } from "@/components/story";
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
           <Route path="/about" element={<About />} />
           <Route path="/systems" element={<Features />} />
           <Route path="/school" element={<Story />} />
+          <Route path="/staff" element={<Staff />} />
           <Route path="/join" element={<Contact />} />
           {/* Fallback to home for unknown routes */}
           <Route path="*" element={<Hero />} />
