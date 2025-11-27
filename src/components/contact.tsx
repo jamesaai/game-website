@@ -7,9 +7,9 @@ interface ImageClipBoxProps {
   clipClass?: string;
 }
 
-const ImageClipBox = ({ src, alt, clipClass = "" }: ImageClipBoxProps) => (
+const ImageClipBox = ({ src, alt, clipClass }: ImageClipBoxProps) => (
   <div className={clipClass}>
-    <img src={src} alt={alt} loading="lazy" />
+    <img src={src} alt={alt} />
   </div>
 );
 
@@ -57,7 +57,10 @@ export const Contact = () => {
             <br /> fire safety <br /> enth<b>u</b>siasts
           </p>
 
-          <Button containerClass="mt-10 cursor-pointer" onClick={handleJoinDiscord}>
+          <Button
+            containerClass="mt-10 cursor-pointer bg-blue-500 px-6 py-3 rounded-lg text-white hover:bg-blue-600 transition"
+            onClick={handleJoinDiscord}
+          >
             Join Discord
           </Button>
         </div>
