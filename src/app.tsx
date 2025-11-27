@@ -1,3 +1,5 @@
+import { Routes, Route } from "react-router-dom";
+
 import { About } from "@/components/about";
 import { Contact } from "@/components/contact";
 import { Features } from "@/components/features";
@@ -8,15 +10,19 @@ import { Story } from "@/components/story";
 
 const App = () => {
   return (
-    <div className="relative min-h-screen w-screen overflow-x-hidden">
+    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black text-blue-50">
       <Navbar />
 
       <main>
-        <Hero />
-        <About />
-        <Features />
-        <Story />
-        <Contact />
+        <Routes>
+          <Route path="/" element={<Hero />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/systems" element={<Features />} />
+          <Route path="/school" element={<Story />} />
+          <Route path="/join" element={<Contact />} />
+          {/* Fallback to home for unknown routes */}
+          <Route path="*" element={<Hero />} />
+        </Routes>
       </main>
 
       <Footer />

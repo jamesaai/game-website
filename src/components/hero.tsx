@@ -94,7 +94,7 @@ export const Hero = () => {
   });
 
   return (
-    <section id="hero" className="relative h-dvh w-screen overflow-x-hidden">
+    <section id="hero" className="relative h-dvh w-screen overflow-x-hidden bg-black">
       {isLoading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div className="three-body">
@@ -107,9 +107,10 @@ export const Hero = () => {
 
       <div
         id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-75"
+        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-200/10"
       >
-        <div>
+        {/* Background video layer */}
+        <div className="absolute inset-0">
           <div className="mask-clip-path absolute-center absolute z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
             <div
               onClick={handleMiniVideoClick}
@@ -148,36 +149,57 @@ export const Hero = () => {
             onLoadedData={handleVideoLoad}
           />
         </div>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
 
-        <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-blue-75">
-          Fire <b>S</b>afety
-        </h1>
-
-        <div className="absolute left-0 top-0 z-40 size-full">
-          <div className="mt-24 px-5 sm:px-10">
+        {/* Foreground content */}
+        <div className="relative z-40 flex h-full w-full flex-col items-center justify-center px-6">
+          <div className="max-w-5xl text-center">
             <h1 className="special-font hero-heading text-blue-100">
-              Atlanta <b>H</b>igh
+              Atlanta <b>H</b>igh.
             </h1>
 
-            <p className="mb-5 max-w-64 font-robert-regular text-blue-100">
-              Realistic Fire Alarm Simulation <br />
-              Learn. Test. Master.
+            <p className="mx-auto mt-4 max-w-xl font-robert-regular text-blue-100/80 text-lg md:text-xl">
+              Explore the most realistic fire alarm simulation on Roblox. Learn fire safety systems,
+              run drills, and master emergency procedures in a modern high school.
             </p>
 
-            <Button
-              id="play-now"
-              leftIcon={TiLocationArrow}
-              containerClass="bg-yellow-300 flex-center gap-1"
-            >
-              <span onClick={handlePlayNow}>Play Now on Roblox</span>
-            </Button>
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+              <Button
+                id="play-now"
+                leftIcon={TiLocationArrow}
+                containerClass="bg-red-300 text-black px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold hover:bg-red-400 transition"
+              >
+                <span onClick={handlePlayNow}>Play Now on Roblox</span>
+              </Button>
+
+              <Button
+                id="join-group"
+                containerClass="border border-white/20 bg-black/40 px-8 py-3 rounded-full text-sm font-semibold text-blue-50 hover:bg-white/10 transition"
+              >
+                <span>Join Group</span>
+              </Button>
+            </div>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-3">
+              <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
+                <p className="text-xs uppercase tracking-wide text-blue-100/60">Currently Playing</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-50">54</p>
+              </div>
+
+              <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
+                <p className="text-xs uppercase tracking-wide text-blue-100/60">Total Visits</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-50">18.0M</p>
+              </div>
+
+              <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
+                <p className="text-xs uppercase tracking-wide text-blue-100/60">Favorites</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-50">98.2K</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
-
-      <h1 className="special-font hero-heading absolute bottom-5 right-5 text-black">
-        Fire <b>S</b>afety
-      </h1>
     </section>
   );
 };

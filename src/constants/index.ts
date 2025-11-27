@@ -3,11 +3,11 @@ import { FaXTwitter } from "react-icons/fa6";
 import { SiRoblox } from "react-icons/si";
 
 export const NAV_ITEMS = [
-  { label: "GAMEPLAY", href: "#hero" },
-  { label: "About", href: "#about" },
-  { label: "Systems", href: "#systems" },
-  { label: "School", href: "#school" },
-  { label: "Join", href: "#contact" },
+  { label: "Gameplay", path: "/" },
+  { label: "About", path: "/about" },
+  { label: "Systems", path: "/systems" },
+  { label: "School", path: "/school" },
+  { label: "Join", path: "/join" },
 ] as const;
 
 export const LINKS = {

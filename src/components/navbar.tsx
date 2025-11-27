@@ -1,5 +1,6 @@
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 import { SiRoblox } from "react-icons/si";
 import { TiLocationArrow } from "react-icons/ti";
 import { useWindowScroll } from "react-use";
@@ -68,9 +69,9 @@ export const Navbar = () => {
       <div className="absolute top-1/2 w-full -translate-y-1/2">
         <nav className="flex size-full items-center justify-between p-4">
           <div className="flex items-center gap-7">
-            <a href="#hero" className="transition hover:opacity-75">
+            <Link to="/" className="transition hover:opacity-75">
               <img src="/img/logo.png" alt="Atlanta High Logo" className="w-10" />
-            </a>
+            </Link>
 
             <Button
               id="play-button"
@@ -83,10 +84,17 @@ export const Navbar = () => {
 
           <div className="flex h-full items-center">
             <div className="hidden md:block">
-              {NAV_ITEMS.map(({ label, href }) => (
-                <a key={href} href={href} className="nav-hover-btn">
+              {NAV_ITEMS.map(({ label, path }) => (
+                <NavLink
+                  key={path}
+                  to={path}
+                  className={({ isActive }) =>
+                    cn("nav-hover-btn", isActive && "font-semibold text-blue-50")
+                  }
+                  end={path === "/"}
+                >
                   {label}
-                </a>
+                </NavLink>
               ))}
             </div>
 
