@@ -1,54 +1,53 @@
-import { FaDiscord, FaTwitch, FaYoutube } from "react-icons/fa";
+import { FaDiscord, FaYoutube } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { SiRoblox } from "react-icons/si";
 
 export const NAV_ITEMS = [
-  { label: "TRAILER", href: "#hero" },
+  { label: "GAMEPLAY", href: "#hero" },
   { label: "About", href: "#about" },
-  { label: "Nexus", href: "#nexus" },
-  { label: "Story", href: "#story" },
-  { label: "Contact", href: "#contact" },
+  { label: "Systems", href: "#systems" },
+  { label: "School", href: "#school" },
+  { label: "Join", href: "#contact" },
 ] as const;
 
 export const LINKS = {
-  sourceCode: "https://github.com/sanidhyy/game-website",
+  documentation: "https://atlantahigh.mintlify.app/",
+  robloxGame: "https://www.roblox.com/games/72522242437087", // Replace with your actual game ID
+  discord: "https://discord.gg/firealarm", // Replace with your actual Discord
+  sourceCode: "https://github.com/yourusername/atlanta-high", // Optional
 } as const;
 
 export const SOCIAL_LINKS = [
   {
-    href: "https://discord.com",
+    href: "https://discord.gg/firealarm", // Replace with actual Discord
     icon: FaDiscord,
   },
   {
-    href: "https://twitter.com",
+    href: "https://twitter.com/YOUR-GAME", // Replace with actual Twitter
     icon: FaXTwitter,
   },
   {
-    href: "https://youtube.com",
+    href: "https://youtube.com/@blake-flyz", // Replace with actual YouTube
     icon: FaYoutube,
   },
   {
-    href: "https://twitch.com",
-    icon: FaTwitch,
+    href: "https://www.roblox.com/groups/35390256", // Replace with actual Roblox group
+    icon: SiRoblox,
   },
 ] as const;
 
+// Replace these with your actual gameplay video URLs
 export const VIDEO_LINKS = {
-  feature1:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCc56aV03LYRyJDZsOPGdFTt0lQuHLkeqjKCao1",
-  feature2:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCclcn5JiTo8NUtBfpgkOmXZ2CT3DjMr19Yqlac",
-  feature3:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCcbZvH6O7fXDrfMZ6S457EQsgoxTCIz1kjlnVd",
-  feature4:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCcSrGHFCyiMbxBtTacUmFzn4dZpwVYNfvR6WLg",
-  feature5:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCc1qT68sSEu6tgkCBNP3FH45AUe70hrbTaxYDm",
-  hero1:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCc5wEKtxLYRyJDZsOPGdFTt0lQuHLkeqjKCao1",
-  hero2:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCcLjP2Y7QEQuN5THDwzeBx4OvmaFZjP6ysCKk3",
-  hero3:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCcpmpmzmuj1IHWSEokgRuN2hMcUpBq0xQery3i",
-  hero4:
-    "https://93w95scdts.ufs.sh/f/AOfILeWJzqCcpB0GHsouj1IHWSEokgRuN2hMcUpBq0xQery3",
+  // Fire alarm system demonstrations
+  feature1: "https://YOUR-CDN.com/fire-alarm-panel.mp4", // Fire alarm control panel
+  feature2: "https://YOUR-CDN.com/pull-stations.mp4", // Pull station demonstration
+  feature3: "https://YOUR-CDN.com/notification-devices.mp4", // Horns and strobes
+  feature4: "https://YOUR-CDN.com/fire-drill.mp4", // Fire drill sequence
+  feature5: "https://YOUR-CDN.com/school-tour.mp4", // School walkthrough
+  
+  // Hero/gameplay videos - main footage
+  hero1: "https://YOUR-CDN.com/gameplay-1.mp4", // Main gameplay loop
+  hero2: "https://YOUR-CDN.com/gameplay-2.mp4", // Classroom fire alarm
+  hero3: "https://YOUR-CDN.com/gameplay-3.mp4", // Hallway evacuation
+  hero4: "https://YOUR-CDN.com/gameplay-4.mp4", // Control room
 };
