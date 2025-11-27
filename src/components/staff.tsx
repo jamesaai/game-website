@@ -55,24 +55,13 @@ const StaffCard = ({ member, index }: { member: StaffMember; index: number }) =>
   useEffect(() => {
     const fetchAvatar = async () => {
       try {
-        const response = await fetch(
-          `https://users.roblox.com/v1/users/get-by-username?username=${member.robloxUsername}`
-        );
+        const response = await fetch(`/api/roblox-avatar?username=${member.robloxUsername}`);
         if (!response.ok) {
           throw new Error("User not found");
         }
         const data = await response.json();
-        if (data.id) {
-          const avatarResponse = await fetch(
-            `https://thumbnails.roblox.com/v1/users/avatar-headshot?userIds=${data.id}&size=420x420&format=Png&isCircular=false`
-          );
-          if (avatarResponse.ok) {
-            const avatarData = await avatarResponse.json();
-            const imageUrl = avatarData.data?.[0]?.imageUrl;
-            if (imageUrl) {
-              setAvatarUrl(imageUrl);
-            }
-          }
+        if (data.success && data.avatarUrl) {
+          setAvatarUrl(data.avatarUrl);
         }
       } catch (error) {
         console.warn(`Failed to load avatar for ${member.robloxUsername}:`, error);
