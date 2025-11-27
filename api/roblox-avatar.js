@@ -22,36 +22,53 @@ export default async function handler(req, res) {
   }
 
   try {
+    console.log(`Fetching avatar for username: ${username}`);
+    
     // First, get user ID from username
     const userResponse = await fetch(
       `https://users.roblox.com/v1/users/get-by-username?username=${encodeURIComponent(username)}`
     );
 
+    console.log(`User API response status: ${userResponse.status}`);
+
     if (!userResponse.ok) {
-      throw new Error(`User not found: ${userResponse.status}`);
+      const errorText = await userResponse.text();
+      console.log(`User API error response: ${errorText}`);
+      throw new Error(`User not found (status: ${userResponse.status})`);
     }
 
     const userData = await userResponse.json();
+    console.log(`User data:`, JSON.stringify(userData, null, 2));
     
     if (!userData.id) {
       throw new Error('User ID not found in response');
     }
 
-    // Then, get 3D avatar
+    console.log(`Found user ID: ${userData.id}`);
+
+    // Then, get 3D avatar object
     const avatarResponse = await fetch(
       `https://thumbnails.roblox.com/v1/users/avatar-3d?userId=${userData.id}&size=420x420&format=Png&captureSide=Front`
     );
 
+    console.log(`Avatar API response status: ${avatarResponse.status}`);
+
     if (!avatarResponse.ok) {
-      throw new Error(`Avatar fetch failed: ${avatarResponse.status}`);
+      const errorText = await avatarResponse.text();
+      console.log(`Avatar API error response: ${errorText}`);
+      throw new Error(`Avatar fetch failed (status: ${avatarResponse.status})`);
     }
 
     const avatarData = await avatarResponse.json();
+    console.log(`Avatar data:`, JSON.stringify(avatarData, null, 2));
+    
     const imageUrl = avatarData.data?.[0]?.imageUrl;
 
     if (!imageUrl) {
       throw new Error('Avatar URL not found in response');
     }
+
+    console.log(`Avatar URL: ${imageUrl}`);
 
     return res.status(200).json({
       success: true,
@@ -65,7 +82,8 @@ export default async function handler(req, res) {
     console.error('Roblox avatar proxy error:', error);
     return res.status(500).json({ 
       error: 'Failed to fetch avatar',
-      message: error.message 
+      message: error.message,
+      details: error.toString()
     });
   }
 }
