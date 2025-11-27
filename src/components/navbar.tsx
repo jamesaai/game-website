@@ -70,60 +70,34 @@ export const Navbar = () => {
         <div className="mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-black/40 px-4 py-2 shadow-lg backdrop-blur-md">
           <nav className="flex w-full items-center justify-between">
             <div className="flex items-center gap-7">
-            <Link to="/" className="transition hover:opacity-75">
-              <img src="/img/logo.png" alt="Atlanta High Logo" className="w-10" />
-            </Link>
+              <Link to="/" className="transition hover:opacity-75">
+                <img src="/img/logo.png" alt="Atlanta High Logo" className="w-10" />
+              </Link>
 
-            <Button
-              id="play-button"
-              rightIcon={TiLocationArrow}
-              containerClass="bg-blue-50 text-black flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-semibold shadow-sm hover:bg-blue-100 transition"
-            >
-              <span onClick={handlePlayGame}>Play Game</span>
-            </Button>
-          </div>
-
-            <div className="flex h-full items-center">
-            <div className="hidden md:block">
-              {NAV_ITEMS.map(({ label, path }) => (
-                <NavLink
-                  key={path}
-                  to={path}
-                  className={({ isActive }: { isActive: boolean }) =>
-                    cn("nav-hover-btn", isActive && "font-semibold text-blue-50")
-                  }
-                  end={path === "/"}
-                >
-                  {label}
-                </NavLink>
-              ))}
+              <Button
+                id="play-button"
+                rightIcon={TiLocationArrow}
+                containerClass="bg-blue-50 text-black flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-semibold shadow-sm hover:bg-blue-100 transition"
+              >
+                <span onClick={handlePlayGame}>Play Game</span>
+              </Button>
             </div>
 
-            <div className="flex items-center gap-4">
-              <button
-                onClick={toggleAudioIndicator}
-                className="ml-10 flex items-center space-x-1 p-2 transition hover:opacity-75"
-                title="Play Ambient Sound"
-              >
-                <audio
-                  ref={audioElementRef}
-                  src="/audio/loop.mp3"
-                  className="hidden"
-                  loop
-                />
-
-                {Array(4)
-                  .fill("")
-                  .map((_, i) => (
-                    <div
-                      key={i + 1}
-                      className={cn(
-                        "indicator-line",
-                        isIndicatorActive && "active"
-                      )}
-                      style={{ animationDelay: `${(i + 1) * 0.1}s` }}
-                    />
-                  ))}
+            <div className="flex h-full items-center">
+              <div className="hidden md:block">
+                {NAV_ITEMS.map(({ label, path }) => (
+                  <NavLink
+                    key={path}
+                    to={path}
+                    className={({ isActive }: { isActive: boolean }) =>
+                      cn("nav-hover-btn", isActive && "font-semibold text-blue-50")
+                    }
+                    end={path === "/"}
+                  >
+                    {label}
+                  </NavLink>
+                ))}
+              </div>
 
               <div className="flex items-center gap-4">
                 <button
