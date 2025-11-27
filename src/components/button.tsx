@@ -1,37 +1,19 @@
-import type { PropsWithChildren } from "react";
-import type { IconType } from "react-icons";
-
-import { cn } from "@/lib/utils";
+import React from "react";
 
 interface ButtonProps {
-  id?: string;
-  leftIcon?: IconType;
-  rightIcon?: IconType;
   containerClass?: string;
+  onClick?: () => void;
+  children: React.ReactNode;
 }
 
-export const Button = ({
-  id,
-  children,
-  containerClass,
-  leftIcon: LeftIcon,
-  rightIcon: RightIcon,
-}: PropsWithChildren<ButtonProps>) => {
+export const Button: React.FC<ButtonProps> = ({ containerClass, onClick, children }) => {
   return (
     <button
-      id={id}
-      className={cn(
-        "group relative z-10 w-fit cursor-pointer overflow-hidden rounded-full bg-violet-50 px-7 py-3 text-black transition hover:opacity-75",
-        containerClass
-      )}
+      className={containerClass}
+      onClick={onClick}
+      type="button"
     >
-      {LeftIcon ? <LeftIcon /> : null}
-
-      <p className="relative inline-flex overflow-hidden font-general text-xs uppercase">
-        {children}
-      </p>
-
-      {RightIcon ? <RightIcon /> : null}
+      {children}
     </button>
   );
 };
