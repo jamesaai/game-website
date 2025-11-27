@@ -27,7 +27,7 @@ export const Navbar = () => {
   };
 
   const handlePlayGame = () => {
-    window.open(LINKS.robloxGame, "_blank");
+    window.open(LINKS.robloxGame, "_blank", "noopener,noreferrer");
   };
 
   // Play / pause audio
@@ -76,7 +76,7 @@ export const Navbar = () => {
             <Button
               id="play-button"
               rightIcon={TiLocationArrow}
-              containerClass="bg-blue-50 md:flex hidden items-center justify-center gap-1"
+              containerClass="bg-blue-50 text-black flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-semibold shadow-sm hover:bg-blue-100 transition"
             >
               <span onClick={handlePlayGame}>Play Game</span>
             </Button>

@@ -14,6 +14,8 @@ export const Hero = () => {
   const [hasClicked, setHasClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
+  const [playerCount, setPlayerCount] = useState<number | null>(null);
+  const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
 
   const nextVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -26,7 +28,11 @@ export const Hero = () => {
   };
 
   const handlePlayNow = () => {
-    window.open(LINKS.robloxGame, "_blank");
+    window.open(LINKS.robloxGame, "_blank", "noopener,noreferrer");
+  };
+
+  const handleJoinGroup = () => {
+    window.open(LINKS.discord, "_blank", "noopener,noreferrer");
   };
 
   const VIDEO_KEYS = ["hero1", "hero2", "hero3", "hero4"] as const;
@@ -92,6 +98,53 @@ export const Hero = () => {
       },
     });
   });
+
+  useEffect(() => {
+    const fetchPlayerCount = async () => {
+      try {
+        const url = new URL(LINKS.robloxGame);
+        const placeIdMatch = url.pathname.match(/\/games\/(\d+)/);
+        const placeId = placeIdMatch?.[1];
+        if (!placeId) {
+          setIsPlayerCountLoading(false);
+          return;
+        }
+
+        const placeResp = await fetch(
+          `https://games.roblox.com/v1/games/multiget-place-details?placeIds=${placeId}`
+        );
+        if (!placeResp.ok) {
+          setIsPlayerCountLoading(false);
+          return;
+        }
+        const placeData: Array<{ universeId: number }> = await placeResp.json();
+        const universeId = placeData[0]?.universeId;
+        if (!universeId) {
+          setIsPlayerCountLoading(false);
+          return;
+        }
+
+        const gameResp = await fetch(
+          `https://games.roblox.com/v1/games?universeIds=${universeId}`
+        );
+        if (!gameResp.ok) {
+          setIsPlayerCountLoading(false);
+          return;
+        }
+        const gameData: { data: Array<{ playing: number }> } = await gameResp.json();
+        const playing = gameData.data?.[0]?.playing;
+        if (typeof playing === "number") {
+          setPlayerCount(playing);
+        }
+      } catch {
+        // fail silently, keep fallback UI
+      } finally {
+        setIsPlayerCountLoading(false);
+      }
+    };
+
+    void fetchPlayerCount();
+  }, []);
 
   return (
     <section id="hero" className="relative h-dvh w-screen overflow-x-hidden bg-black">
@@ -176,6 +229,7 @@ export const Hero = () => {
               <Button
                 id="join-group"
                 containerClass="border border-white/20 bg-black/40 px-8 py-3 rounded-full text-sm font-semibold text-blue-50 hover:bg-white/10 transition"
+                onClick={handleJoinGroup}
               >
                 <span>Join Group</span>
               </Button>
@@ -184,7 +238,9 @@ export const Hero = () => {
             <div className="mt-10 grid gap-4 sm:grid-cols-3">
               <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
                 <p className="text-xs uppercase tracking-wide text-blue-100/60">Currently Playing</p>
-                <p className="mt-2 text-2xl font-semibold text-blue-50">54</p>
+                <p className="mt-2 text-2xl font-semibold text-blue-50">
+                  {isPlayerCountLoading ? "--" : playerCount ?? 0}
+                </p>
               </div>
 
               <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
