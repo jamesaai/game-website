@@ -12,7 +12,7 @@ Atlanta High is a realistic high school fire safety simulation on Roblox. Experi
 
 ### Prerequisite
 
-- Node.js (v20.19.0 or higher)
+- Node.js (v20.19.1 or higher)
 - npm, yarn, or bun package manager
 
 ### Installation
