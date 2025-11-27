@@ -80,7 +80,7 @@ A good bug report shouldn't leave others needing to chase you up for more inform
 
 > You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to <sanidhya.verma12345@gmail.com>.
 
-We use GitHub issues to track bugs and errors. If you run into an issue with the project:
+We use GitHub issues to trac bugs and errors. If you run into an issue with the project:
 
 - Open an [Issue](https://github.com/sanidhyy/game-website/issues/new). (Since we can't be sure at this point whether it is a bug or not, we ask you not to talk about a bug yet and not to label the issue.)
 - Explain the behavior you would expect and the actual behavior.
