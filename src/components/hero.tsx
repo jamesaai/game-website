@@ -10,8 +10,6 @@ import { VIDEO_LINKS, LINKS } from "@/constants";
 gsap.registerPlugin(ScrollTrigger);
 
 export const Hero = () => {
-  const [currentIndex, setCurrentIndex] = useState(1);
-  const [hasClicked, setHasClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [playerCount, setPlayerCount] = useState<number | null>(null);
@@ -22,12 +20,7 @@ export const Hero = () => {
   const nextVideoRef = useRef<HTMLVideoElement>(null);
 
   const totalVideos = 4;
-  const upcomingVideoIndex = (currentIndex % totalVideos) + 1;
-
-  const handleMiniVideoClick = () => {
-    setHasClicked(true);
-    setCurrentIndex(upcomingVideoIndex);
-  };
+  const currentIndex = 1; // static since we removed mini preview
 
   const handlePlayNow = () => {
     window.open(LINKS.robloxGame, "_blank", "noopener,noreferrer");
@@ -53,34 +46,6 @@ export const Hero = () => {
       setIsLoading(false);
     }
   }, [loadedVideos]);
-
-  useGSAP(
-    () => {
-      if (hasClicked) {
-        gsap.set("#next-video", { visibility: "visible" });
-
-        gsap.to("#next-video", {
-          transformOrigin: "center center",
-          scale: 1,
-          width: "100%",
-          height: "100%",
-          duration: 1,
-          ease: "power1.inOut",
-          onStart: () => {
-            void nextVideoRef.current?.play();
-          },
-        });
-
-        gsap.from("#current-video", {
-          transformOrigin: "center center",
-          scale: 0,
-          duration: 1.5,
-          ease: "power1.inOut",
-        });
-      }
-    },
-    { dependencies: [currentIndex], revertOnUpdate: true }
-  );
 
   useGSAP(() => {
     gsap.set("#video-frame", {
@@ -156,7 +121,7 @@ export const Hero = () => {
             <div className="origin-center scale-50 opacity-0">
               <video
                 ref={nextVideoRef}
-                src={getVideoSrc(upcomingVideoIndex)}
+                src={getVideoSrc(1)}
                 loop
                 muted
                 id="current-video"
