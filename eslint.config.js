@@ -7,7 +7,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    settings: { react: { version: "18.3" } },
+    settings: { react: { version: "detect" } },
     plugins: {
       react,
     },

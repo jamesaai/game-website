@@ -1,7 +1,10 @@
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/all";
 import { PropsWithChildren, useEffect, useRef } from "react";
 
 import { cn } from "@/lib/utils";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface AnimatedTitleProps {
   containerClass?: string;
