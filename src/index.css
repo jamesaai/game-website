@@ -8,7 +8,7 @@
 
 /* Global body styles */
 body {
-  width: 100vw; /* FIXED from 100dvw */
+  width: 100vw;
   overflow-x: hidden;
   background-color: #dfdff0;
   font-family: "General Sans", sans-serif;
@@ -19,26 +19,31 @@ body {
   @font-face {
     font-family: "circular-web";
     src: url("/fonts/circularweb-book.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "general";
     src: url("/fonts/general.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "robert-medium";
     src: url("/fonts/robert-medium.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "robert-regular";
     src: url("/fonts/robert-regular.woff2") format("woff2");
+    font-display: swap;
   }
 
   @font-face {
     font-family: "zentry";
     src: url("/fonts/zentry-regular.woff2") format("woff2");
+    font-display: swap;
   }
 }
 
@@ -70,7 +75,7 @@ body {
 
   .special-font b {
     font-family: "zentry";
-    font-feature-settings: "ss01" on;
+    font-feature-settings: "ss01" 1;
   }
 
   .hero-heading {
@@ -79,7 +84,7 @@ body {
 
   .about-subtext {
     @apply absolute left-1/2 w-full max-w-96 -translate-x-1/2 text-center font-circular-web text-lg md:max-w-[34rem];
-    bottom: -80vh; /* moved negative vh out of @apply */
+    bottom: -80vh;
   }
 
   .about-image {
@@ -93,7 +98,7 @@ body {
   .animated-word {
     @apply special-font font-zentry font-black opacity-0;
     transform: translate3d(10px, 51px, -60px) rotateY(60deg) rotateX(-40deg);
-    transform-origin: 50% 50% -150px;
+    transform-origin: 50% 50%;
     will-change: opacity, transform;
   }
 
