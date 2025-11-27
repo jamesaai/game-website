@@ -225,8 +225,15 @@ body {
 .three-body__dot:nth-child(2)::after {
   bottom: 0;
   left: 0;
-  animation: wobble1 var(--uib-speed) infinite calc(var(--uib-speed) * -0.15)
-    ease-in-out;
+  /* FIX: The original 'animation' shorthand property had its values in a 
+    non-standard order (e.g., 'infinite' before 'calc' before 'ease-in-out').
+    This can confuse some parsers.
+    
+    We've split it into 'animation' and 'animation-delay' for correctness
+    and to match the style of the ':nth-child(1)' rule above.
+  */
+  animation: wobble1 var(--uib-speed) ease-in-out infinite;
+  animation-delay: calc(var(--uib-speed) * -0.15);
 }
 
 .three-body__dot:nth-child(3) {
@@ -251,7 +258,8 @@ body {
 }
 
 @keyframes wobble1 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0%) scale(1);
     opacity: 1;
   }
@@ -262,7 +270,8 @@ body {
 }
 
 @keyframes wobble2 {
-  0%, 100% {
+  0%,
+  100% {
     transform: translateY(0%) scale(1);
     opacity: 1;
   }
@@ -271,3 +280,4 @@ body {
     opacity: 0.8;
   }
 }
+
