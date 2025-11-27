@@ -88,7 +88,7 @@ export const Navbar = () => {
                 <NavLink
                   key={path}
                   to={path}
-                  className={({ isActive }) =>
+                  className={({ isActive }: { isActive: boolean }) =>
                     cn("nav-hover-btn", isActive && "font-semibold text-blue-50")
                   }
                   end={path === "/"}
