@@ -102,9 +102,7 @@ export const Hero = () => {
   useEffect(() => {
     const fetchPlayerCount = async () => {
       try {
-        const resp = await fetch(
-          "https://games.roblox.com/v1/games?universeIds=8107420919"
-        );
+        const resp = await fetch("/api/roblox-players");
         if (!resp.ok) {
           setIsPlayerCountLoading(false);
           return;
