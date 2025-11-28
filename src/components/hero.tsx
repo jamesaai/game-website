@@ -6,7 +6,6 @@ import { TiLocationArrow } from "react-icons/ti";
 
 import { Button } from "./button";
 import { VIDEO_LINKS, LINKS } from "@/constants";
-import { StaffSection } from "./staff-section";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -94,8 +93,7 @@ export const Hero = () => {
   }, []);
 
   return (
-    <>
-      <section id="hero" className="relative h-dvh w-screen overflow-hidden bg-black">
+    <section id="hero" className="relative h-dvh w-screen overflow-hidden bg-black">
       {isLoading && (
         <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
           <div className="three-body">
@@ -206,9 +204,5 @@ export const Hero = () => {
         </div>
       </div>
     </section>
-
-    {/* Staff Section */}
-    <StaffSection />
-    </>
   );
 };
