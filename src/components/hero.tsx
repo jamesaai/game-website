@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 
 import { Button } from "./button";
+import { Snowflakes } from "./Snowflakes";
 import { VIDEO_LINKS, LINKS } from "@/constants";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -93,16 +94,18 @@ export const Hero = () => {
   }, []);
 
   return (
-    <section id="hero" className="relative h-dvh w-screen overflow-hidden bg-black">
-      {isLoading && (
-        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
-          <div className="three-body">
-            <div className="three-body__dot" />
-            <div className="three-body__dot" />
-            <div className="three-body__dot" />
+    <section className="relative h-dvh w-screen overflow-hidden">
+      <Snowflakes />
+      <div className="bg-black">
+        {isLoading && (
+          <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
+            <div className="three-body">
+              <div className="three-body__dot" />
+              <div className="three-body__dot" />
+              <div className="three-body__dot" />
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       <div
         id="video-frame"
@@ -165,39 +168,39 @@ export const Hero = () => {
               <Button
                 id="play-now"
                 leftIcon={TiLocationArrow}
-                containerClass="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 sm:px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold shadow-lg hover:shadow-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 w-full sm:w-auto"
+                containerClass="bg-gradient-to-r from-green-600 to-red-600 text-white px-6 sm:px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold shadow-lg hover:shadow-xl hover:from-green-700 hover:to-red-700 transition-all duration-300 w-full sm:w-auto border-2 border-green-400/30"
                 onClick={handlePlayNow}
               >
-                <span>Play Now on Roblox</span>
+                <span>🎄 Play Now on Roblox</span>
               </Button>
 
               <Button
                 id="join-group"
-                containerClass="border border-white/20 bg-white/10 backdrop-blur-sm px-6 sm:px-8 py-3 rounded-full text-sm font-semibold text-blue-50 hover:bg-white/20 transition-all duration-300 w-full sm:w-auto"
+                containerClass="border border-green-400/50 bg-gradient-to-r from-green-600/20 to-red-600/20 backdrop-blur-sm px-6 sm:px-8 py-3 rounded-full text-sm font-semibold text-white hover:from-green-600/30 hover:to-red-600/30 transition-all duration-300 w-full sm:w-auto"
                 onClick={handleJoinGroup}
               >
-                <span>Join Group</span>
+                <span>🎅 Join Group</span>
               </Button>
             </div>
 
             <div className="mt-10 grid gap-4 px-4 sm:grid-cols-3 sm:px-0">
-              <div className="border border-white/10 rounded-xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm px-4 py-5 text-left">
-                <p className="text-xs uppercase tracking-wide text-blue-100/60">Currently Playing</p>
-                <p className="mt-2 text-2xl font-semibold text-blue-50">
+              <div className="border border-green-400/30 rounded-xl bg-gradient-to-br from-red-600/30 to-green-600/30 backdrop-blur-sm px-4 py-5 text-left shadow-lg shadow-red-600/20">
+                <p className="text-xs uppercase tracking-wide text-green-100/90 font-semibold">🎅 Currently Playing</p>
+                <p className="mt-2 text-2xl font-semibold text-white">
                   {isPlayerCountLoading ? "--" : playerCount ?? 0}
                 </p>
               </div>
 
-              <div className="border border-white/10 rounded-xl bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur-sm px-4 py-5 text-left">
-                <p className="text-xs uppercase tracking-wide text-blue-100/60">Total Visits</p>
-                <p className="mt-2 text-2xl font-semibold text-blue-50">
+              <div className="border border-red-400/30 rounded-xl bg-gradient-to-br from-green-600/30 to-red-600/30 backdrop-blur-sm px-4 py-5 text-left shadow-lg shadow-green-600/20">
+                <p className="text-xs uppercase tracking-wide text-red-100/90 font-semibold">🎄 Total Visits</p>
+                <p className="mt-2 text-2xl font-semibold text-white">
                   {isVisitCountLoading ? "--" : totalVisits ?? 0}
                 </p>
               </div>
 
-              <div className="border border-white/10 rounded-xl bg-gradient-to-br from-red-600/20 to-orange-600/20 backdrop-blur-sm px-4 py-5 text-left">
-                <p className="text-xs uppercase tracking-wide text-blue-100/60">Server Status</p>
-                <p className="mt-2 text-2xl font-semibold text-green-400">Online</p>
+              <div className="border border-green-400/30 rounded-xl bg-gradient-to-br from-red-600/30 to-green-600/30 backdrop-blur-sm px-4 py-5 text-left shadow-lg shadow-red-600/20">
+                <p className="text-xs uppercase tracking-wide text-green-100/90 font-semibold">🎁 Server Status</p>
+                <p className="mt-2 text-2xl font-semibold text-green-300">Online</p>
               </div>
             </div>
           </div>

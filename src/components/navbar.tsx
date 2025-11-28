@@ -68,7 +68,7 @@ export const Navbar = () => {
       className="fixed inset-x-0 top-0 z-50 h-16 border-none transition-all duration-700"
     >
       <div className="flex h-full items-center justify-center px-4 sm:px-6">
-        <div className="flex items-center justify-between w-full max-w-2xl rounded-2xl border border-white/10 bg-black/80 backdrop-blur-2xl px-4 sm:px-6 py-2 shadow-lg shadow-black/20">
+        <div className="flex items-center justify-between w-full max-w-2xl rounded-2xl border border-green-400/30 bg-gradient-to-r from-green-900/80 to-red-900/80 backdrop-blur-2xl px-4 sm:px-6 py-2 shadow-lg shadow-green-600/20">
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link to="/" className="transition hover:opacity-75">
