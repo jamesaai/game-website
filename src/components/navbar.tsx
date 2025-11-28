@@ -68,7 +68,7 @@ export const Navbar = () => {
       className="fixed inset-x-0 top-0 z-50 h-16 border-none transition-all duration-700"
     >
       <div className="flex h-full items-center justify-center px-4 sm:px-6">
-        <div className="flex items-center justify-between w-full max-w-2xl rounded-2xl border border-green-400/30 bg-gradient-to-r from-green-900/80 to-red-900/80 backdrop-blur-2xl px-4 sm:px-6 py-2 shadow-lg shadow-green-600/20">
+        <div className="flex items-center justify-between w-full max-w-4xl rounded-2xl border border-green-400/30 bg-gradient-to-r from-green-900/80 to-red-900/80 backdrop-blur-2xl px-4 sm:px-6 py-2 shadow-lg shadow-green-600/20">
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link to="/" className="transition hover:opacity-75">
@@ -137,21 +137,21 @@ export const Navbar = () => {
       </div>
 
       {/* Floating Roblox Icon */}
-      <div className="fixed bottom-6 right-6 z-40">
+      <div className="fixed bottom-8 right-8 z-[60]">
         <a
           href={LINKS.robloxGame}
           target="_blank"
           rel="noreferrer noopener"
-          className="group relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-110"
+          className="group relative flex items-center justify-center w-14 h-14 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-110"
           title="Play on Roblox"
         >
-          <SiRoblox size={20} className="text-white" />
+          <SiRoblox size={24} className="text-white" />
           
           {/* Floating animation pulse */}
           <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-30 animate-ping"></div>
           
           {/* Tooltip */}
-          <div className="absolute bottom-full mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+          <div className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
             Play on Roblox
             <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </div>
