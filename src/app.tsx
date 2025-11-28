@@ -10,13 +10,13 @@ import { Navbar } from "@/components/navbar";
 import { Story } from "@/components/story";
 import { PrivacyPolicy } from "@/pages/PrivacyPolicy";
 import { TermsOfService } from "@/pages/TermsOfService";
-import { ChristmasBanner } from "@/components/ChristmasBanner";
+import { ChristmasCursor } from "@/components/ChristmasCursor";
 
 const App = () => {
   return (
     <div className="relative min-h-screen w-screen overflow-x-hidden bg-black text-blue-50">
+      <ChristmasCursor />
       <Navbar />
-      <ChristmasBanner />
 
       <main>
         <Routes>

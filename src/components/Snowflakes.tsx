@@ -12,12 +12,12 @@ export const Snowflakes = () => {
   const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
 
   useEffect(() => {
-    const flakes: Snowflake[] = Array.from({ length: 50 }, (_, i) => ({
+    const flakes: Snowflake[] = Array.from({ length: 100 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      animationDuration: Math.random() * 3 + 2,
-      opacity: Math.random() * 0.6 + 0.4,
-      size: Math.random() * 3 + 2,
+      animationDuration: Math.random() * 4 + 1,
+      opacity: Math.random() * 0.8 + 0.2,
+      size: Math.random() * 4 + 1,
     }));
     setSnowflakes(flakes);
   }, []);
