@@ -3,14 +3,14 @@ import { SOCIAL_LINKS } from "@/constants";
 export const Footer = () => {
   return (
     <footer className="w-screen bg-red-600 py-4 text-white">
-      <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-8 md:flex-row">
+      <div className="container mx-auto flex flex-col items-center justify-between gap-4 px-4 sm:px-6 md:px-8 md:flex-row">
 
         <p className="text-center text-sm md:text-left">
           © <strong className="font-semibold">Atlanta High</strong>{" "}
           {new Date().getFullYear()}. All rights reserved.
         </p>
 
-        <div className="flex justify-center gap-4 md:justify-start">
+        <div className="flex justify-center gap-3 sm:gap-4 md:justify-start">
           {SOCIAL_LINKS.map(({ href, icon: Icon }) => (
             <a
               key={"social-" + href}
@@ -24,7 +24,7 @@ export const Footer = () => {
           ))}
         </div>
 
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-col sm:flex-row items-center gap-1.5">
           <a
             href="#"
             className="text-center text-sm transition hover:underline hover:opacity-75 md:text-right"
@@ -32,7 +32,7 @@ export const Footer = () => {
             Privacy Policy
           </a>
 
-          <b>|</b>
+          <b className="hidden sm:inline">|</b>
 
           <a
             href="#"

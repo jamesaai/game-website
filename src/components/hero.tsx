@@ -13,9 +13,9 @@ export const Hero = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [playerCount, setPlayerCount] = useState<number | null>(null);
-  const [visits, setVisits] = useState<number | null>(null);
-  const [favorites, setFavorites] = useState<number | null>(null);
+  const [totalVisits, setTotalVisits] = useState<number | null>(null);
   const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
+  const [isVisitCountLoading, setIsVisitCountLoading] = useState(true);
 
   const nextVideoRef = useRef<HTMLVideoElement>(null);
 
@@ -79,15 +79,9 @@ export const Hero = () => {
         const game = data.data?.[0];
         if (game) {
           if (typeof game.playing === "number") setPlayerCount(game.playing);
-          if (typeof game.visits === "number") setVisits(game.visits);
-          const fav =
-            typeof game.favoritedCount === "number"
-              ? game.favoritedCount
-              : typeof game.favorites === "number"
-                ? game.favorites
-                : null;
-          if (fav !== null) setFavorites(fav);
+          if (typeof game.visits === "number") setTotalVisits(game.visits);
         }
+        setIsVisitCountLoading(false);
       } catch {
         // fail silently, keep fallback UI
       } finally {
@@ -167,11 +161,11 @@ export const Hero = () => {
               run drills, and master emergency procedures in a modern high school.
             </p>
 
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 px-4 sm:flex-row sm:gap-6 sm:px-0">
               <Button
                 id="play-now"
                 leftIcon={TiLocationArrow}
-                containerClass="bg-red-300 text-black px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold hover:bg-red-400 transition"
+                containerClass="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 sm:px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold shadow-lg hover:shadow-xl hover:from-red-700 hover:to-red-800 transition-all duration-300 w-full sm:w-auto"
                 onClick={handlePlayNow}
               >
                 <span>Play Now on Roblox</span>
@@ -179,33 +173,31 @@ export const Hero = () => {
 
               <Button
                 id="join-group"
-                containerClass="border border-white/20 bg-black/40 px-8 py-3 rounded-full text-sm font-semibold text-blue-50 hover:bg-white/10 transition"
+                containerClass="border border-white/20 bg-white/10 backdrop-blur-sm px-6 sm:px-8 py-3 rounded-full text-sm font-semibold text-blue-50 hover:bg-white/20 transition-all duration-300 w-full sm:w-auto"
                 onClick={handleJoinGroup}
               >
                 <span>Join Group</span>
               </Button>
             </div>
 
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
+            <div className="mt-10 grid gap-4 px-4 sm:grid-cols-3 sm:px-0">
+              <div className="border border-white/10 rounded-xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 backdrop-blur-sm px-4 py-5 text-left">
                 <p className="text-xs uppercase tracking-wide text-blue-100/60">Currently Playing</p>
                 <p className="mt-2 text-2xl font-semibold text-blue-50">
                   {isPlayerCountLoading ? "--" : playerCount ?? 0}
                 </p>
               </div>
 
-              <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
+              <div className="border border-white/10 rounded-xl bg-gradient-to-br from-green-600/20 to-emerald-600/20 backdrop-blur-sm px-4 py-5 text-left">
                 <p className="text-xs uppercase tracking-wide text-blue-100/60">Total Visits</p>
                 <p className="mt-2 text-2xl font-semibold text-blue-50">
-                  {visits !== null ? visits.toLocaleString() : "--"}
+                  {isVisitCountLoading ? "--" : totalVisits ?? 0}
                 </p>
               </div>
 
-              <div className="border-hsla rounded-xl bg-black/50 px-4 py-5 text-left">
-                <p className="text-xs uppercase tracking-wide text-blue-100/60">Favorites</p>
-                <p className="mt-2 text-2xl font-semibold text-blue-50">
-                  {favorites !== null ? favorites.toLocaleString() : "--"}
-                </p>
+              <div className="border border-white/10 rounded-xl bg-gradient-to-br from-red-600/20 to-orange-600/20 backdrop-blur-sm px-4 py-5 text-left">
+                <p className="text-xs uppercase tracking-wide text-blue-100/60">Server Status</p>
+                <p className="mt-2 text-2xl font-semibold text-green-400">Online</p>
               </div>
             </div>
           </div>

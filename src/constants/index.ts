@@ -3,13 +3,14 @@ import { FaXTwitter } from "react-icons/fa6";
 import { SiRoblox } from "react-icons/si";
 
 export const NAV_ITEMS = [
-  { label: "Gameplay", path: "/" },
+  { label: "Home", path: "/" },
   { label: "About", path: "/about" },
-  { label: "Systems", path: "/systems" },
-  { label: "School", path: "/school" },
   { label: "Staff", path: "/staff" },
-  { label: "Join", path: "/join" },
 ] as const;
+
+export const EXTERNAL_LINKS = {
+  status: "https://status.ahscampus.com/",
+} as const;
 
 export const LINKS = {
   documentation: "https://atlantahigh.mintlify.app/",

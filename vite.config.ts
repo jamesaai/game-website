@@ -9,4 +9,9 @@ export default defineConfig({
       "@": "/src",
     },
   },
+  server: {
+    middlewareMode: false,
+  },
+  preview: {
+  },
 });

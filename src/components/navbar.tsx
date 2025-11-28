@@ -5,7 +5,7 @@ import { SiRoblox } from "react-icons/si";
 import { TiLocationArrow } from "react-icons/ti";
 import { useWindowScroll } from "react-use";
 
-import { LINKS, NAV_ITEMS } from "@/constants";
+import { LINKS, NAV_ITEMS, EXTERNAL_LINKS } from "@/constants";
 import { cn } from "@/lib/utils";
 
 import { Button } from "./button";
@@ -67,17 +67,17 @@ export const Navbar = () => {
       className="fixed inset-x-0 top-4 z-50 h-16 border-none transition-all duration-700 sm:inset-x-6"
     >
       <div className="absolute top-1/2 w-full -translate-y-1/2">
-        <div className="mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-black/40 px-4 py-2 shadow-lg backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-black/60 backdrop-blur-xl px-3 sm:px-4 py-2 shadow-lg shadow-black/20">
           <nav className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-7">
+            <div className="flex items-center gap-3 sm:gap-7">
               <Link to="/" className="transition hover:opacity-75">
-                <img src="/img/logo.png" alt="Atlanta High Logo" className="w-10" />
+                <img src="/img/logo.png" alt="Atlanta High Logo" className="w-8 sm:w-10" />
               </Link>
 
               <Button
                 id="play-button"
                 rightIcon={TiLocationArrow}
-                containerClass="bg-blue-50 text-black flex items-center justify-center gap-2 px-4 py-2 rounded-full text-xs font-semibold shadow-sm hover:bg-blue-100 transition"
+                containerClass="bg-gradient-to-r from-blue-600 to-purple-600 text-white flex items-center justify-center gap-2 px-2 sm:px-4 py-2 rounded-full text-xs font-semibold shadow-lg hover:shadow-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 hidden sm:flex"
               >
                 <span onClick={handlePlayGame}>Play Game</span>
               </Button>
@@ -99,10 +99,10 @@ export const Navbar = () => {
                 ))}
               </div>
 
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 <button
                   onClick={toggleAudioIndicator}
-                  className="ml-10 flex items-center space-x-1 p-2 transition hover:opacity-75"
+                  className="ml-4 sm:ml-10 flex items-center space-x-1 p-1.5 sm:p-2 transition hover:opacity-75"
                   title="Play Ambient Sound"
                 >
                   <audio
@@ -127,12 +127,22 @@ export const Navbar = () => {
                 </button>
 
                 <a
+                  href={EXTERNAL_LINKS.status}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  className="transition hover:opacity-75 hidden sm:block"
+                  title="Server Status"
+                >
+                  <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+                </a>
+
+                <a
                   href={LINKS.robloxGame}
                   target="_blank"
                   rel="noreferrer noopener"
                   className="transition hover:opacity-75"
                 >
-                  <SiRoblox size={24} />
+                  <SiRoblox size={20} className="sm:size-24" />
                 </a>
               </div>
             </div>
