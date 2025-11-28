@@ -1,10 +1,9 @@
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { SiRoblox } from "react-icons/si";
 import { useWindowScroll } from "react-use";
 
-import { LINKS, NAV_ITEMS, EXTERNAL_LINKS } from "@/constants";
+import { NAV_ITEMS, EXTERNAL_LINKS } from "@/constants";
 import { cn } from "@/lib/utils";
 
 const CountdownTimer = () => {
@@ -174,28 +173,6 @@ export const Navbar = () => {
             </a>
           </div>
         </div>
-      </div>
-
-      {/* Floating Roblox Icon */}
-      <div className="fixed bottom-8 right-8 z-[60]">
-        <a
-          href={LINKS.robloxGame}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="group relative flex items-center justify-center w-14 h-14 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-110"
-          title="Play on Roblox"
-        >
-          <SiRoblox size={24} className="text-white" />
-          
-          {/* Floating animation pulse */}
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-30 animate-ping"></div>
-          
-          {/* Tooltip */}
-          <div className="absolute bottom-full mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
-            Play on Roblox
-            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
-          </div>
-        </a>
       </div>
     </header>
   );
