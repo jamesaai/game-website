@@ -26,7 +26,7 @@ export const Footer = () => {
 
         <div className="flex flex-col sm:flex-row items-center gap-1.5">
           <a
-            href="/privacy-policy.html"
+            href="/privacy-policy"
             className="text-center text-sm transition hover:underline hover:opacity-75 md:text-right"
           >
             Privacy Policy
@@ -35,7 +35,7 @@ export const Footer = () => {
           <b className="hidden sm:inline">|</b>
 
           <a
-            href="/terms-of-service.html"
+            href="/terms-of-service"
             className="text-center text-sm transition hover:underline hover:opacity-75 md:text-right"
           >
             Terms &amp; Conditions
