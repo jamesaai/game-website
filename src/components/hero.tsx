@@ -106,7 +106,7 @@ export const Hero = () => {
 
       <div
         id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-200/10"
+        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-200/10 pt-16"
       >
         {/* Background video layer */}
         <div className="absolute inset-0">
