@@ -72,7 +72,7 @@ export const Navbar = () => {
           {/* Left side - Logo */}
           <div className="flex items-center">
             <Link to="/" className="transition hover:opacity-75">
-              <img src="/img/logo.png" alt="Atlanta High Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
+              <img src="/atlanta-high-logo.png" alt="Atlanta High Logo" className="w-6 h-6 sm:w-8 sm:h-8" />
             </Link>
           </div>
 

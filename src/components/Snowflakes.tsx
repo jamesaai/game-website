@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useMobileDetection } from '@/hooks/useMobileDetection';
 
 interface Snowflake {
   id: number;
@@ -9,10 +10,12 @@ interface Snowflake {
 }
 
 export const Snowflakes = () => {
+  const isMobile = useMobileDetection();
   const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
 
   useEffect(() => {
-    const flakes: Snowflake[] = Array.from({ length: 100 }, (_, i) => ({
+    const flakeCount = isMobile ? 30 : 100; // Fewer snowflakes on mobile
+    const flakes: Snowflake[] = Array.from({ length: flakeCount }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       animationDuration: Math.random() * 4 + 1,
@@ -20,7 +23,7 @@ export const Snowflakes = () => {
       size: Math.random() * 4 + 1,
     }));
     setSnowflakes(flakes);
-  }, []);
+  }, [isMobile]);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
