@@ -107,7 +107,7 @@ body {
   }
 
   .bento-tilt_1 {
-    @apply border-hlsa relative col-span-2 overflow-hidden rounded-md transition-transform duration-300 ease-out;
+    @apply border-green-400/30 relative col-span-2 overflow-hidden rounded-md transition-transform duration-300 ease-out;
   }
 
   .bento-tilt_2 {
