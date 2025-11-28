@@ -9,7 +9,7 @@ interface ImageClipBoxProps {
 
 const ImageClipBox = ({ src, alt, clipClass }: ImageClipBoxProps) => (
   <div className={clipClass}>
-    <img src={src} alt={alt} />
+    <img src={src} alt={alt} width="400" height="300" />
   </div>
 );
 

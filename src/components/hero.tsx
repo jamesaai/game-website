@@ -1,7 +1,7 @@
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 
 import { Button } from "./button";
@@ -27,10 +27,7 @@ export const Hero = () => {
   const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
   const [isVisitCountLoading, setIsVisitCountLoading] = useState(true);
 
-  const nextVideoRef = useRef<HTMLVideoElement>(null);
-
-  const totalVideos = 4;
-  const currentIndex = 1; // static since we removed mini preview
+  const totalVideos = 1; // Only load one video
 
   const handlePlayNow = () => {
     window.open(LINKS.robloxGame, "_blank", "noopener,noreferrer");
@@ -52,7 +49,7 @@ export const Hero = () => {
   };
 
   useEffect(() => {
-    if (loadedVideos === totalVideos - 1) {
+    if (loadedVideos === totalVideos) {
       setIsLoading(false);
     }
   }, [loadedVideos]);
@@ -79,9 +76,17 @@ export const Hero = () => {
   useEffect(() => {
     const fetchPlayerCount = async () => {
       try {
-        const resp = await fetch("/api/roblox-players");
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        
+        const resp = await fetch("/api/roblox-players", { 
+          signal: controller.signal 
+        });
+        clearTimeout(timeoutId);
+        
         if (!resp.ok) {
           setIsPlayerCountLoading(false);
+          setIsVisitCountLoading(false);
           return;
         }
 
@@ -92,8 +97,9 @@ export const Hero = () => {
           if (typeof game.visits === "number") setTotalVisits(game.visits);
         }
         setIsVisitCountLoading(false);
-      } catch {
+      } catch (error) {
         // fail silently, keep fallback UI
+        setIsVisitCountLoading(false);
       } finally {
         setIsPlayerCountLoading(false);
       }
@@ -122,40 +128,15 @@ export const Hero = () => {
       >
         {/* Background video layer */}
         <div className="absolute inset-0">
-          {/* Hidden preview mask - disabled for cleaner UX */}
-          <div className="mask-clip-path absolute-center absolute z-50 size-64 overflow-hidden rounded-lg hidden">
-            <div className="origin-center scale-50 opacity-0">
-              <video
-                ref={nextVideoRef}
-                src={getVideoSrc(1)}
-                loop
-                muted
-                id="current-video"
-                className="size-64 origin-center scale-150 object-cover object-center"
-                onLoadedData={handleVideoLoad}
-              />
-            </div>
-          </div>
-
           <video
-            ref={nextVideoRef}
-            src={getVideoSrc(currentIndex)}
-            loop
-            muted
-            id="next-video"
-            className="absolute-center invisible absolute z-20 size-64 object-cover object-center"
-            onLoadedData={handleVideoLoad}
-          />
-
-          <video
-            src={
-              currentIndex === totalVideos - 1 ? getVideoSrc(1) : getVideoSrc(currentIndex)
-            }
+            src={getVideoSrc(1)}
             autoPlay
             loop
             muted
             className="absolute left-0 top-0 size-full object-cover object-center"
             onLoadedData={handleVideoLoad}
+            width="1920"
+            height="1080"
           />
         </div>
         {/* Dark overlay */}

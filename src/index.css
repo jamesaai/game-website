@@ -102,8 +102,12 @@ body {
     will-change: opacity, transform;
   }
 
+  img, video {
+    contain: layout;
+  }
+
   .bento-tilt_1 {
-    @apply border-hsla relative col-span-2 overflow-hidden rounded-md transition-transform duration-300 ease-out;
+    @apply border-hlsa relative col-span-2 overflow-hidden rounded-md transition-transform duration-300 ease-out;
   }
 
   .bento-tilt_2 {
@@ -251,4 +255,22 @@ body {
 @keyframes wobble2 {
   0%, 100% { transform: translateY(0%) scale(1); opacity: 1; }
   50% { transform: translateY(66%) scale(0.65); opacity: 0.8; }
+}
+
+/* Add CSS containment to prevent layout shifts */
+img, video {
+  contain: layout;
+}
+
+/* Prevent layout shifts during font loading - this is handled by Tailwind's font loading strategy */
+
+/* Improve animation performance */
+.snowflake, .animate-pulse {
+  will-change: transform, opacity;
+  contain: layout;
+}
+
+/* Hero section containment */
+#video-frame {
+  contain: layout paint;
 }

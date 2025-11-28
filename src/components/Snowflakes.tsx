@@ -14,19 +14,35 @@ export const Snowflakes = () => {
   const [snowflakes, setSnowflakes] = useState<Snowflake[]>([]);
 
   useEffect(() => {
-    const flakeCount = isMobile ? 30 : 100; // Fewer snowflakes on mobile
+    const flakeCount = isMobile ? 15 : 40; // Reduced count for better performance
     const flakes: Snowflake[] = Array.from({ length: flakeCount }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      animationDuration: Math.random() * 4 + 1,
-      opacity: Math.random() * 0.8 + 0.2,
-      size: Math.random() * 4 + 1,
+      animationDuration: Math.random() * 3 + 2, // Shorter animations
+      opacity: Math.random() * 0.6 + 0.2, // Reduced opacity range
+      size: Math.random() * 3 + 1, // Smaller size range
     }));
     setSnowflakes(flakes);
   }, [isMobile]);
 
   return (
     <div className="fixed inset-0 pointer-events-none z-30 overflow-hidden">
+      {snowflakes.map((flake) => (
+        <div
+          key={flake.id}
+          className="absolute text-white user-select-none pointer-events-none animate-pulse"
+          style={{
+            left: `${flake.left}%`,
+            animation: `snowfall ${flake.animationDuration}s linear infinite`,
+            opacity: flake.opacity,
+            fontSize: `${flake.size}px`,
+            animationDelay: `${Math.random() * 2}s`,
+            transform: 'translateY(-100px)',
+          }}
+        >
+          ❄
+        </div>
+      ))}
       <style>{`
         @keyframes snowfall {
           0% {
@@ -36,31 +52,7 @@ export const Snowflakes = () => {
             transform: translateY(calc(100vh + 100px)) rotate(360deg);
           }
         }
-        
-        .snowflake {
-          position: absolute;
-          color: white;
-          user-select: none;
-          pointer-events: none;
-          animation: snowfall linear infinite;
-        }
       `}</style>
-      
-      {snowflakes.map((flake) => (
-        <div
-          key={flake.id}
-          className="snowflake"
-          style={{
-            left: `${flake.left}%`,
-            animationDuration: `${flake.animationDuration}s`,
-            opacity: flake.opacity,
-            fontSize: `${flake.size}px`,
-            animationDelay: `${Math.random() * 2}s`,
-          }}
-        >
-          ❄
-        </div>
-      ))}
     </div>
   );
 };

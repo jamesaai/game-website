@@ -53,6 +53,8 @@ export const About = () => {
             src="/img/about.webp"
             alt="Atlanta High Fire Alarm System"
             className="absolute left-0 top-0 w-full h-full object-cover"
+            width="1920"
+            height="1080"
           />
         </div>
       </div>
