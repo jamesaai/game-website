@@ -64,10 +64,10 @@ export const Navbar = () => {
   return (
     <header
       ref={navContainerRef}
-      className="fixed inset-x-0 top-4 z-50 h-16 border-none transition-all duration-700 sm:inset-x-6"
+      className="fixed inset-x-0 top-0 z-50 h-14 border-none transition-all duration-700"
     >
-      <div className="absolute top-1/2 w-full -translate-y-1/2">
-        <div className="mx-auto flex max-w-5xl items-center justify-between rounded-full border border-white/10 bg-black/60 backdrop-blur-xl px-3 sm:px-4 py-2 shadow-lg shadow-black/20">
+      <div className="flex h-full items-center px-4 sm:px-6">
+        <div className="mx-auto flex max-w-5xl w-full items-center justify-between rounded-full border border-white/10 bg-black/60 backdrop-blur-xl px-3 sm:px-4 py-2 shadow-lg shadow-black/20">
           <nav className="flex w-full items-center justify-between">
             <div className="flex items-center gap-3 sm:gap-7">
               <Link to="/" className="transition hover:opacity-75">

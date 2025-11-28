@@ -12,9 +12,9 @@ export function securityMiddleware(server: ViteDevServer) {
     // Content Security Policy
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-      "font-src 'self' https://fonts.gstatic.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.cdnfonts.com",
+      "font-src 'self' https://fonts.gstatic.com https://fonts.cdnfonts.com",
       "img-src 'self' data: https:",
       "connect-src 'self' https://www.roblox.com",
       "media-src 'self' https:",

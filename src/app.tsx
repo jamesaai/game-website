@@ -1,10 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 
 import { About } from "@/components/about";
+import { Contact } from "@/components/contact";
+import { Features } from "@/components/features";
+import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
-import { Staff } from "@/components/staff";
-import { Footer } from "@/components/footer";
+import { Story } from "@/components/story";
 
 const App = () => {
   return (
@@ -15,7 +17,9 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Hero />} />
           <Route path="/about" element={<About />} />
-          <Route path="/staff" element={<Staff />} />
+          <Route path="/systems" element={<Features />} />
+          <Route path="/school" element={<Story />} />
+          <Route path="/join" element={<Contact />} />
           {/* Fallback to home for unknown routes */}
           <Route path="*" element={<Hero />} />
         </Routes>
