@@ -14,18 +14,17 @@ gsap.registerPlugin(ScrollTrigger);
 
 export const Hero = () => {
   const isMobile = useMobileDetection();
-  
-  // Return mobile-optimized version for mobile devices
-  if (isMobile) {
-    return <MobileOptimizedHero />;
-  }
-
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [playerCount, setPlayerCount] = useState<number | null>(null);
   const [totalVisits, setTotalVisits] = useState<number | null>(null);
   const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
   const [isVisitCountLoading, setIsVisitCountLoading] = useState(true);
+
+  // Return mobile-optimized version for mobile devices
+  if (isMobile) {
+    return <MobileOptimizedHero />;
+  }
 
   const totalVideos = 1; // Only load one video
 
