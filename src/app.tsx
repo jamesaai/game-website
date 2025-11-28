@@ -1,6 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 
 import { About } from "@/components/about";
+import { Apply } from "@/components/apply";
 import { Contact } from "@/components/contact";
 import { Features } from "@/components/features";
 import { Footer } from "@/components/footer";
@@ -20,6 +21,7 @@ const App = () => {
           <Route path="/systems" element={<Features />} />
           <Route path="/school" element={<Story />} />
           <Route path="/join" element={<Contact />} />
+          <Route path="/apply" element={<Apply />} />
           {/* Fallback to home for unknown routes */}
           <Route path="*" element={<Hero />} />
         </Routes>
