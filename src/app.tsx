@@ -8,6 +8,8 @@ import { Footer } from "@/components/footer";
 import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
 import { Story } from "@/components/story";
+import { PrivacyPolicy } from "@/pages/PrivacyPolicy";
+import { TermsOfService } from "@/pages/TermsOfService";
 
 const App = () => {
   return (
@@ -22,6 +24,8 @@ const App = () => {
           <Route path="/school" element={<Story />} />
           <Route path="/join" element={<Contact />} />
           <Route path="/apply" element={<Apply />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+          <Route path="/terms-of-service" element={<TermsOfService />} />
           {/* Fallback to home for unknown routes */}
           <Route path="*" element={<Hero />} />
         </Routes>

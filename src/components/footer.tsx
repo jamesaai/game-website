@@ -1,4 +1,5 @@
 import { SOCIAL_LINKS } from "@/constants";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -25,21 +26,21 @@ export const Footer = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row items-center gap-1.5">
-          <a
-            href="/privacy-policy"
+          <Link
+            to="/privacy-policy"
             className="text-center text-sm transition hover:underline hover:opacity-75 md:text-right"
           >
             Privacy Policy
-          </a>
+          </Link>
 
           <b className="hidden sm:inline">|</b>
 
-          <a
-            href="/terms-of-service"
+          <Link
+            to="/terms-of-service"
             className="text-center text-sm transition hover:underline hover:opacity-75 md:text-right"
           >
             Terms &amp; Conditions
-          </a>
+          </Link>
         </div>
 
       </div>
