@@ -122,17 +122,11 @@ export const Contact = () => {
                     Open Application Form
                   </Button>
                   
-                  {/* Alternative: Embedded iframe */}
-                  <div className="mt-6">
-                    <p className="text-gray-400 text-sm mb-3">Or fill out the form below:</p>
-                    <div className="relative w-full" style={{ paddingBottom: '75%' }}>
-                      <iframe
-                        src="https://melonly.xyz/forms/7383328359192727552"
-                        className="absolute top-0 left-0 w-full h-full rounded-lg border-0"
-                        title="Staff Application Form"
-                        loading="lazy"
-                      />
-                    </div>
+                  {/* Note about embedding */}
+                  <div className="mt-4 p-3 bg-yellow-900/30 border border-yellow-600 rounded-lg">
+                    <p className="text-yellow-400 text-sm">
+                      ⚠️ Note: The application form will open in a new tab for the best experience.
+                    </p>
                   </div>
                 </div>
               </div>

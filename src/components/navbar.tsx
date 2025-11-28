@@ -132,17 +132,30 @@ export const Navbar = () => {
             >
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
             </a>
-
-            <a
-              href={LINKS.robloxGame}
-              target="_blank"
-              rel="noreferrer noopener"
-              className="transition hover:opacity-75"
-            >
-              <SiRoblox size={14} className="sm:size-16" />
-            </a>
           </div>
         </div>
+      </div>
+
+      {/* Floating Roblox Icon */}
+      <div className="fixed bottom-6 right-6 z-40">
+        <a
+          href={LINKS.robloxGame}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="group relative flex items-center justify-center w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 transition-all duration-300 hover:scale-110"
+          title="Play on Roblox"
+        >
+          <SiRoblox size={20} className="text-white" />
+          
+          {/* Floating animation pulse */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-30 animate-ping"></div>
+          
+          {/* Tooltip */}
+          <div className="absolute bottom-full mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+            Play on Roblox
+            <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
+          </div>
+        </a>
       </div>
     </header>
   );
