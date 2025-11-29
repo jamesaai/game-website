@@ -31,7 +31,7 @@ export const PassRedirect = () => {
         </h1>
         
         <p className="text-gray-300 text-lg mb-6">
-          Taking you to the payment portal
+          Taking you to the AHS payment portal
         </p>
 
         {/* Progress bar */}
