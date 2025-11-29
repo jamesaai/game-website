@@ -2,31 +2,13 @@ import { useEffect, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
 import { Users, Eye, Heart } from "lucide-react";
 
-// Mock Button component
-const Button = ({ children, leftIcon: Icon, containerClass, onClick, id }) => (
-  <button id={id} className={containerClass} onClick={onClick}>
-    {Icon && <Icon className="w-4 h-4" />}
-    {children}
-  </button>
-);
+import { Button } from "./button";
+import { Snowflakes } from "./Snowflakes";
+import { MobileOptimizedHero } from "./MobileOptimizedHero";
+import { useMobileDetection } from "@/hooks/useMobileDetection";
+import { VIDEO_LINKS, LINKS } from "@/constants";
 
-// Mock Snowflakes component
-const Snowflakes = () => <div className="snowflakes-container" />;
-
-// Mock mobile detection
-const useMobileDetection = () => false;
-
-// Mock constants
-const VIDEO_LINKS = {
-  hero1: "https://assets.mixkit.co/videos/preview/mixkit-school-hallway-with-lockers-47308-large.mp4"
-};
-
-const LINKS = {
-  robloxGame: "https://www.roblox.com",
-  discord: "https://discord.com"
-};
-
-export default function ImprovedHero() {
+export const Hero = () => {
   const isMobile = useMobileDetection();
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
@@ -36,6 +18,11 @@ export default function ImprovedHero() {
   const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
   const [isVisitCountLoading, setIsVisitCountLoading] = useState(true);
 
+  // Return mobile-optimized version for mobile devices
+  if (isMobile) {
+    return <MobileOptimizedHero />;
+  }
+
   const totalVideos = 1;
 
   const handlePlayNow = () => {
@@ -44,6 +31,13 @@ export default function ImprovedHero() {
 
   const handleJoinGroup = () => {
     window.open(LINKS.discord, "_blank", "noopener,noreferrer");
+  };
+
+  const VIDEO_KEYS = ["hero1", "hero2", "hero3", "hero4"] as const;
+
+  const getVideoSrc = (i: number) => {
+    const key = VIDEO_KEYS[i - 1];
+    return VIDEO_LINKS[key];
   };
 
   const handleVideoLoad = () => {
@@ -73,12 +67,13 @@ export default function ImprovedHero() {
           return;
         }
 
-        const data: { data: Array<{ playing?: number; visits?: number; favoritedCount?: number }> } = await resp.json();
+        const data: { data: Array<{ playing?: number; visits?: number; favoritedCount?: number; favorites?: number }> } = await resp.json();
         const game = data.data?.[0];
         if (game) {
           if (typeof game.playing === "number") setPlayerCount(game.playing);
           if (typeof game.visits === "number") setTotalVisits(game.visits);
           if (typeof game.favoritedCount === "number") setFavoritesCount(game.favoritedCount);
+          if (typeof game.favorites === "number" && !game.favoritedCount) setFavoritesCount(game.favorites);
         }
         setIsVisitCountLoading(false);
       } catch (error) {
@@ -100,30 +95,32 @@ export default function ImprovedHero() {
   };
 
   return (
-    <section className="relative h-screen w-screen overflow-hidden bg-black">
+    <section className="relative h-dvh w-screen overflow-hidden bg-black">
       <Snowflakes />
       
       {isLoading && (
-        <div className="flex items-center justify-center absolute z-[100] h-screen w-screen overflow-hidden bg-gray-900">
-          <div className="flex gap-2">
-            <div className="w-3 h-3 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0ms" }} />
-            <div className="w-3 h-3 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "150ms" }} />
-            <div className="w-3 h-3 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+        <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-gray-900">
+          <div className="three-body">
+            <div className="three-body__dot" />
+            <div className="three-body__dot" />
+            <div className="three-body__dot" />
           </div>
         </div>
       )}
 
-      <div className="relative z-10 h-screen w-screen overflow-hidden">
+      <div className="relative z-10 h-dvh w-screen overflow-hidden">
         {/* Background video layer */}
         <div className="absolute inset-0">
           <video
-            src={VIDEO_LINKS.hero1}
+            src={getVideoSrc(1)}
             autoPlay
             loop
             muted
             playsInline
-            className="absolute left-0 top-0 w-full h-full object-cover object-center"
+            className="absolute left-0 top-0 size-full object-cover object-center"
             onLoadedData={handleVideoLoad}
+            width="1920"
+            height="1080"
           />
         </div>
         
@@ -134,12 +131,12 @@ export default function ImprovedHero() {
         <div className="relative z-40 flex h-full w-full flex-col items-center justify-center px-6">
           <div className="max-w-5xl text-center">
             {/* Main Heading */}
-            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-white mb-6 tracking-tight">
-              Hi, we're <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Atlanta High.</span>
+            <h1 className="special-font hero-heading text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">
+              Atlanta <b>H</b>igh.
             </h1>
 
             {/* Tagline */}
-            <p className="mx-auto mt-6 max-w-2xl text-gray-300 text-lg md:text-xl leading-relaxed">
+            <p className="mx-auto mt-6 max-w-2xl font-robert-regular text-gray-300 text-lg md:text-xl leading-relaxed">
               Explore the most realistic fire alarm simulation on Roblox. Learn fire safety systems,
               run drills, and master emergency procedures in a modern high school.
             </p>
@@ -182,7 +179,7 @@ export default function ImprovedHero() {
               <Button
                 id="play-now"
                 leftIcon={TiLocationArrow}
-                containerClass="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full flex items-center justify-center gap-2 text-base font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all duration-300 w-full sm:w-auto"
+                containerClass="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full flex-center gap-2 text-base font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all duration-300 w-full sm:w-auto"
                 onClick={handlePlayNow}
               >
                 <span>Play Now</span>
@@ -190,7 +187,7 @@ export default function ImprovedHero() {
 
               <Button
                 id="join-group"
-                containerClass="border-2 border-white/20 hover:border-white/30 bg-white/5 hover:bg-white/10 backdrop-blur-sm px-8 py-3.5 rounded-full text-base font-semibold text-white transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2"
+                containerClass="border-2 border-white/20 hover:border-white/30 bg-white/5 hover:bg-white/10 backdrop-blur-sm px-8 py-3.5 rounded-full text-base font-semibold text-white transition-all duration-300 w-full sm:w-auto flex-center gap-2"
                 onClick={handleJoinGroup}
               >
                 <span>Join Group →</span>
@@ -201,4 +198,4 @@ export default function ImprovedHero() {
       </div>
     </section>
   );
-}
+};
