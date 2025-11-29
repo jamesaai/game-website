@@ -1,32 +1,42 @@
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/all";
 import { useEffect, useState } from "react";
 import { TiLocationArrow } from "react-icons/ti";
+import { Users, Eye, Heart } from "lucide-react";
 
-import { Button } from "./button";
-import { Snowflakes } from "./Snowflakes";
-import { MobileOptimizedHero } from "./MobileOptimizedHero";
-import { useMobileDetection } from "@/hooks/useMobileDetection";
-import { VIDEO_LINKS, LINKS } from "@/constants";
+// Mock Button component
+const Button = ({ children, leftIcon: Icon, containerClass, onClick, id }) => (
+  <button id={id} className={containerClass} onClick={onClick}>
+    {Icon && <Icon className="w-4 h-4" />}
+    {children}
+  </button>
+);
 
-gsap.registerPlugin(ScrollTrigger);
+// Mock Snowflakes component
+const Snowflakes = () => <div className="snowflakes-container" />;
 
-export const Hero = () => {
+// Mock mobile detection
+const useMobileDetection = () => false;
+
+// Mock constants
+const VIDEO_LINKS = {
+  hero1: "https://assets.mixkit.co/videos/preview/mixkit-school-hallway-with-lockers-47308-large.mp4"
+};
+
+const LINKS = {
+  robloxGame: "https://www.roblox.com",
+  discord: "https://discord.com"
+};
+
+export default function ImprovedHero() {
   const isMobile = useMobileDetection();
   const [isLoading, setIsLoading] = useState(true);
   const [loadedVideos, setLoadedVideos] = useState(0);
   const [playerCount, setPlayerCount] = useState<number | null>(null);
   const [totalVisits, setTotalVisits] = useState<number | null>(null);
+  const [favoritesCount, setFavoritesCount] = useState<number | null>(null);
   const [isPlayerCountLoading, setIsPlayerCountLoading] = useState(true);
   const [isVisitCountLoading, setIsVisitCountLoading] = useState(true);
 
-  // Return mobile-optimized version for mobile devices
-  if (isMobile) {
-    return <MobileOptimizedHero />;
-  }
-
-  const totalVideos = 1; // Only load one video
+  const totalVideos = 1;
 
   const handlePlayNow = () => {
     window.open(LINKS.robloxGame, "_blank", "noopener,noreferrer");
@@ -34,13 +44,6 @@ export const Hero = () => {
 
   const handleJoinGroup = () => {
     window.open(LINKS.discord, "_blank", "noopener,noreferrer");
-  };
-
-  const VIDEO_KEYS = ["hero1", "hero2", "hero3", "hero4"] as const;
-
-  const getVideoSrc = (i: number) => {
-    const key = VIDEO_KEYS[i - 1];
-    return VIDEO_LINKS[key];
   };
 
   const handleVideoLoad = () => {
@@ -53,30 +56,11 @@ export const Hero = () => {
     }
   }, [loadedVideos]);
 
-  useGSAP(() => {
-    gsap.set("#video-frame", {
-      clipPath: "polygon(14% 0%, 72% 0%, 90% 90%, 0% 100%)",
-      borderRadius: "0 0 40% 10%",
-    });
-
-    gsap.from("#video-frame", {
-      clipPath: "polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%)",
-      borderRadius: "0 0 0 0",
-      ease: "power1.inOut",
-      scrollTrigger: {
-        trigger: "#video-frame",
-        start: "center center",
-        end: "bottom center",
-        scrub: true,
-      },
-    });
-  });
-
   useEffect(() => {
     const fetchPlayerCount = async () => {
       try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3000); // 3 second timeout
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
         
         const resp = await fetch("/api/roblox-players", { 
           signal: controller.signal 
@@ -89,15 +73,15 @@ export const Hero = () => {
           return;
         }
 
-        const data: { data: Array<{ playing?: number; visits?: number; favoritedCount?: number; favorites?: number }> } = await resp.json();
+        const data: { data: Array<{ playing?: number; visits?: number; favoritedCount?: number }> } = await resp.json();
         const game = data.data?.[0];
         if (game) {
           if (typeof game.playing === "number") setPlayerCount(game.playing);
           if (typeof game.visits === "number") setTotalVisits(game.visits);
+          if (typeof game.favoritedCount === "number") setFavoritesCount(game.favoritedCount);
         }
         setIsVisitCountLoading(false);
       } catch (error) {
-        // fail silently, keep fallback UI
         setIsVisitCountLoading(false);
       } finally {
         setIsPlayerCountLoading(false);
@@ -107,95 +91,114 @@ export const Hero = () => {
     void fetchPlayerCount();
   }, []);
 
-  return (
-    <section className="relative h-dvh w-screen overflow-hidden">
-      <Snowflakes />
-      <div className="bg-black">
-        {isLoading && (
-          <div className="flex-center absolute z-[100] h-dvh w-screen overflow-hidden bg-violet-50">
-            <div className="three-body">
-              <div className="three-body__dot" />
-              <div className="three-body__dot" />
-              <div className="three-body__dot" />
-            </div>
-          </div>
-        )}
+  // Format large numbers
+  const formatNumber = (num: number | null) => {
+    if (num === null) return "0";
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
 
-      <div
-        id="video-frame"
-        className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg bg-blue-200/10 pt-16"
-      >
+  return (
+    <section className="relative h-screen w-screen overflow-hidden bg-black">
+      <Snowflakes />
+      
+      {isLoading && (
+        <div className="flex items-center justify-center absolute z-[100] h-screen w-screen overflow-hidden bg-gray-900">
+          <div className="flex gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "0ms" }} />
+            <div className="w-3 h-3 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "150ms" }} />
+            <div className="w-3 h-3 rounded-full bg-blue-500 animate-bounce" style={{ animationDelay: "300ms" }} />
+          </div>
+        </div>
+      )}
+
+      <div className="relative z-10 h-screen w-screen overflow-hidden">
         {/* Background video layer */}
         <div className="absolute inset-0">
           <video
-            src={getVideoSrc(1)}
+            src={VIDEO_LINKS.hero1}
             autoPlay
             loop
             muted
-            className="absolute left-0 top-0 size-full object-cover object-center"
+            playsInline
+            className="absolute left-0 top-0 w-full h-full object-cover object-center"
             onLoadedData={handleVideoLoad}
-            width="1920"
-            height="1080"
           />
         </div>
-        {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+        
+        {/* Dark overlay - lighter than before to show more video */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/60 to-black/70" />
 
         {/* Foreground content */}
         <div className="relative z-40 flex h-full w-full flex-col items-center justify-center px-6">
           <div className="max-w-5xl text-center">
-            <h1 className="special-font hero-heading text-blue-100">
-              Atlanta <b>H</b>igh.
+            {/* Main Heading */}
+            <h1 className="text-6xl md:text-7xl lg:text-8xl font-black text-white mb-6 tracking-tight">
+              Hi, we're <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-600">Atlanta High.</span>
             </h1>
 
-            <p className="mx-auto mt-4 max-w-xl font-robert-regular text-blue-100/80 text-lg md:text-xl">
+            {/* Tagline */}
+            <p className="mx-auto mt-6 max-w-2xl text-gray-300 text-lg md:text-xl leading-relaxed">
               Explore the most realistic fire alarm simulation on Roblox. Learn fire safety systems,
               run drills, and master emergency procedures in a modern high school.
             </p>
 
-            <div className="mt-8 flex flex-col items-center justify-center gap-4 px-4 sm:flex-row sm:gap-6 sm:px-0">
+            {/* Stats Cards */}
+            <div className="mt-12 grid gap-6 px-4 sm:grid-cols-3 sm:px-0 max-w-3xl mx-auto">
+              <div className="rounded-2xl bg-black/40 backdrop-blur-sm border border-white/10 px-6 py-6 text-center hover:bg-black/50 transition-all duration-300">
+                <div className="flex justify-center mb-3">
+                  <Users className="w-6 h-6 text-green-400" />
+                </div>
+                <p className="text-3xl font-bold text-white mb-1">
+                  {isPlayerCountLoading ? "--" : playerCount ?? 0}
+                </p>
+                <p className="text-sm text-gray-400 font-medium">Currently Playing</p>
+              </div>
+
+              <div className="rounded-2xl bg-black/40 backdrop-blur-sm border border-white/10 px-6 py-6 text-center hover:bg-black/50 transition-all duration-300">
+                <div className="flex justify-center mb-3">
+                  <Eye className="w-6 h-6 text-blue-400" />
+                </div>
+                <p className="text-3xl font-bold text-white mb-1">
+                  {isVisitCountLoading ? "--" : formatNumber(totalVisits)}
+                </p>
+                <p className="text-sm text-gray-400 font-medium">Total Visits</p>
+              </div>
+
+              <div className="rounded-2xl bg-black/40 backdrop-blur-sm border border-white/10 px-6 py-6 text-center hover:bg-black/50 transition-all duration-300">
+                <div className="flex justify-center mb-3">
+                  <Heart className="w-6 h-6 text-pink-400" />
+                </div>
+                <p className="text-3xl font-bold text-white mb-1">
+                  {isVisitCountLoading ? "--" : formatNumber(favoritesCount)}
+                </p>
+                <p className="text-sm text-gray-400 font-medium">Favorites</p>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 px-4 sm:flex-row sm:gap-6 sm:px-0">
               <Button
                 id="play-now"
                 leftIcon={TiLocationArrow}
-                containerClass="bg-gradient-to-r from-green-600 to-red-600 text-white px-6 sm:px-8 py-3 rounded-full flex-center gap-2 text-sm font-semibold shadow-lg hover:shadow-xl hover:from-green-700 hover:to-red-700 transition-all duration-300 w-full sm:w-auto border-2 border-green-400/30"
+                containerClass="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-full flex items-center justify-center gap-2 text-base font-semibold shadow-lg shadow-blue-600/30 hover:shadow-xl hover:shadow-blue-600/40 transition-all duration-300 w-full sm:w-auto"
                 onClick={handlePlayNow}
               >
-                <span>🎄 Play Now on Roblox</span>
+                <span>Play Now</span>
               </Button>
 
               <Button
                 id="join-group"
-                containerClass="border border-green-400/50 bg-gradient-to-r from-green-600/20 to-red-600/20 backdrop-blur-sm px-6 sm:px-8 py-3 rounded-full text-sm font-semibold text-white hover:from-green-600/30 hover:to-red-600/30 transition-all duration-300 w-full sm:w-auto"
+                containerClass="border-2 border-white/20 hover:border-white/30 bg-white/5 hover:bg-white/10 backdrop-blur-sm px-8 py-3.5 rounded-full text-base font-semibold text-white transition-all duration-300 w-full sm:w-auto flex items-center justify-center gap-2"
                 onClick={handleJoinGroup}
               >
-                <span>🎅 Join Group</span>
+                <span>Join Group →</span>
               </Button>
-            </div>
-
-            <div className="mt-10 grid gap-4 px-4 sm:grid-cols-3 sm:px-0">
-              <div className="border border-green-400/30 rounded-xl bg-gradient-to-br from-red-600/30 to-green-600/30 backdrop-blur-sm px-4 py-5 text-left shadow-lg shadow-red-600/20">
-                <p className="text-xs uppercase tracking-wide text-green-100/90 font-semibold">🎅 Currently Playing</p>
-                <p className="mt-2 text-2xl font-semibold text-white">
-                  {isPlayerCountLoading ? "--" : playerCount ?? 0}
-                </p>
-              </div>
-
-              <div className="border border-red-400/30 rounded-xl bg-gradient-to-br from-green-600/30 to-red-600/30 backdrop-blur-sm px-4 py-5 text-left shadow-lg shadow-green-600/20">
-                <p className="text-xs uppercase tracking-wide text-red-100/90 font-semibold">🎄 Total Visits</p>
-                <p className="mt-2 text-2xl font-semibold text-white">
-                  {isVisitCountLoading ? "--" : totalVisits ?? 0}
-                </p>
-              </div>
-
-              <div className="border border-green-400/30 rounded-xl bg-gradient-to-br from-red-600/30 to-green-600/30 backdrop-blur-sm px-4 py-5 text-left shadow-lg shadow-red-600/20">
-                <p className="text-xs uppercase tracking-wide text-green-100/90 font-semibold">🎁 Server Status</p>
-                <p className="mt-2 text-2xl font-semibold text-green-300">Online</p>
-              </div>
             </div>
           </div>
         </div>
       </div>
-      </div>
     </section>
   );
-};
+}

@@ -4,8 +4,5 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install react-router-dom @vercel/speed-insights @vercel/analytics",
   "framework": "vite",
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  "cleanUrls": true
 }
