@@ -10,31 +10,36 @@ import { Navbar } from "@/components/navbar";
 import { Story } from "@/components/story";
 import { PrivacyPolicy } from "@/pages/PrivacyPolicy";
 import { TermsOfService } from "@/pages/TermsOfService";
+import { PassRedirect } from "@/pages/PassRedirect";
 import { ChristmasCursor } from "@/components/ChristmasCursor";
+import { MobileDetector } from "@/components/MobileDetector";
 
 const App = () => {
   return (
-    <div className="relative min-h-screen w-screen overflow-x-hidden bg-black text-blue-50">
-      <ChristmasCursor />
-      <Navbar />
+    <MobileDetector>
+      <div className="relative min-h-screen w-screen overflow-x-hidden bg-black text-blue-50">
+        <ChristmasCursor />
+        <Navbar />
 
-      <main>
-        <Routes>
-          <Route path="/" element={<Hero />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/systems" element={<Features />} />
-          <Route path="/school" element={<Story />} />
-          <Route path="/join" element={<Contact />} />
-          <Route path="/apply" element={<Apply />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-service" element={<TermsOfService />} />
-          {/* Fallback to home for unknown routes */}
-          <Route path="*" element={<Hero />} />
-        </Routes>
-      </main>
+        <main>
+          <Routes>
+            <Route path="/" element={<Hero />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/systems" element={<Features />} />
+            <Route path="/school" element={<Story />} />
+            <Route path="/join" element={<Contact />} />
+            <Route path="/apply" element={<Apply />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/pass" element={<PassRedirect />} />
+            {/* Fallback to home for unknown routes */}
+            <Route path="*" element={<Hero />} />
+          </Routes>
+        </main>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </MobileDetector>
   );
 };
 
