@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Trophy, ChevronRight, Share2, Sparkles, TrendingUp, Award, Clock, Users, Target, Flame, Activity, Gamepad2, Crown, Star as StarIcon } from 'lucide-react';
+import { Trophy, ChevronRight, Sparkles, TrendingUp, Award, Clock, Users, Target, Flame, Activity, Crown, Star as StarIcon } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -166,11 +166,12 @@ const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) =
     </div>
   );
 };
-const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
+
+// Simplified mini-game
+const SimpleMiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
   const [isActive, setIsActive] = useState(false);
-  const [targetPosition, setTargetPosition] = useState({ x: 50, y: 50 });
   
   useEffect(() => {
     if (isActive && timeLeft > 0) {
@@ -182,31 +183,26 @@ const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
     }
   }, [isActive, timeLeft, onComplete]);
   
-  const handleClick = () => {
-    if (isActive) {
-      setScore(score + 1);
-      setTargetPosition({
-        x: Math.random() * 80 + 10,
-        y: Math.random() * 80 + 10
-      });
-    }
-  };
-  
   const startGame = () => {
     setIsActive(true);
     setScore(0);
     setTimeLeft(10);
   };
   
+  const handleClick = () => {
+    if (isActive) {
+      setScore(score + 1);
+    }
+  };
+  
   return (
-    <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-8 text-center">
-      <h3 className="text-2xl font-bold text-white mb-4">🔥 Alarm Speed Challenge 🔥</h3>
-      <p className="text-[#A3A3A3] mb-6 text-sm">Click the alarm as fast as you can!</p>
+    <div className="bg-[#1a1a1f] rounded-xl p-6 text-center border border-[#6C5CE7]/20">
+      <h3 className="text-xl font-bold text-white mb-4">🔥 Speed Challenge</h3>
       
       {!isActive ? (
         <button 
           onClick={startGame}
-          className="px-6 py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-xl hover:scale-105 transition-transform"
+          className="px-6 py-3 bg-[#6C5CE7] text-white font-semibold rounded-lg transition-colors hover:bg-[#5a4bd7]"
         >
           {timeLeft === 0 ? 'Try Again' : 'Start Game'}
         </button>
@@ -217,53 +213,92 @@ const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
             <span>Time: {timeLeft}s</span>
           </div>
           
-          <div className="relative h-64 bg-[rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
-            <div
-              className="absolute w-12 h-12 bg-gradient-to-r from-red-500 to-orange-500 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center text-white font-bold"
-              style={{
-                left: `${targetPosition.x}%`,
-                top: `${targetPosition.y}%`,
-                transform: 'translate(-50%, -50%)'
-              }}
-              onClick={handleClick}
-            >
-              🔥
-            </div>
-          </div>
+          <button
+            onClick={handleClick}
+            className="w-20 h-20 bg-red-500 hover:bg-red-600 rounded-full text-white font-bold text-xl transition-colors"
+          >
+            🔥
+          </button>
         </div>
       )}
     </div>
   );
 };
 
-// Achievement badge component
-const AchievementBadge = ({ icon, name, unlocked, rarity }: {
+// Simplified achievement badge
+const SimpleAchievementBadge = ({ icon, name, unlocked }: {
   icon: string;
   name: string;
   unlocked: boolean;
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
 }) => {
-  const rarityColors = {
-    common: 'from-gray-500 to-gray-600',
-    rare: 'from-blue-500 to-blue-600',
-    epic: 'from-purple-500 to-purple-600',
-    legendary: 'from-yellow-500 to-orange-500'
-  };
-  
   return (
-    <div className={`relative group ${!unlocked && 'opacity-50'}`}>
-      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${rarityColors[rarity]} flex items-center justify-center text-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 cursor-pointer`}>
+    <div className={`text-center ${!unlocked && 'opacity-50'}`}>
+      <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl mb-2 ${
+        unlocked ? 'bg-[#6C5CE7]' : 'bg-[#3a3a3f]'
+      }`}>
         {icon}
       </div>
-      <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-        {unlocked && <StarIcon className="w-4 h-4 text-white" />}
-      </div>
-      <p className="text-xs text-white mt-2 text-center font-medium">{name}</p>
+      <p className="text-xs text-white">{name}</p>
     </div>
   );
 };
 
-// Performance monitoring hook
+// Simplified stat card
+const SimpleStatCard = ({ 
+  value, 
+  label, 
+  icon: Icon,
+  delay = 0
+}: {
+  value: string | number;
+  label: string;
+  icon: any;
+  delay?: number;
+}) => {
+  const [displayValue, setDisplayValue] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), delay * 1000);
+    return () => clearTimeout(timer);
+  }, [delay]);
+  
+  useEffect(() => {
+    if (isVisible && typeof value === 'number') {
+      const duration = 1500;
+      const increment = value / (duration / 16);
+      let current = 0;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= value) {
+          setDisplayValue(value);
+          clearInterval(timer);
+        } else {
+          setDisplayValue(Math.floor(current));
+        }
+      }, 16);
+      
+      return () => clearInterval(timer);
+    } else if (isVisible && typeof value === 'string') {
+      setDisplayValue(value as any);
+    }
+  }, [isVisible, value]);
+  
+  return (
+    <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20 hover:border-[#6C5CE7]/40 transition-all duration-300">
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 bg-[#6C5CE7] rounded-lg flex items-center justify-center">
+          <Icon className="w-5 h-5 text-white" />
+        </div>
+        <div className="text-white font-semibold">{label}</div>
+      </div>
+      <div className="text-2xl font-bold text-white">
+        {typeof displayValue === 'number' ? displayValue.toLocaleString() : displayValue}
+      </div>
+    </div>
+  );
+};
 const usePerformanceMonitor = () => {
   const frameCount = useRef(0);
   const lastTime = useRef(performance.now());
@@ -618,8 +653,6 @@ const AdvancedAchievementCard = ({
 };
 
 const WrapUp2025 = () => {
-  usePerformanceMonitor();
-  
   const [counters, setCounters] = useState({
     visits: 0,
     discord: 0,
@@ -639,8 +672,6 @@ const WrapUp2025 = () => {
   });
   const [currentPage, setCurrentPage] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [gameData, setGameData] = useState<any>(null);
   const [playerData, setPlayerData] = useState<any>(null);
   const [miniGameScore, setMiniGameScore] = useState(0);
   const [username, setUsername] = useState('');
@@ -701,7 +732,6 @@ const WrapUp2025 = () => {
       try {
         const gameStats = await RobloxAPI.getGameStats();
         if (gameStats) {
-          setGameData(gameStats);
           setCounters(prev => ({
             ...prev,
             robloxVisits: gameStats.visits,
@@ -742,8 +772,17 @@ const WrapUp2025 = () => {
   }, []);
   
   // Loading animation
+  // Initialize counters
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoaded(true), 500);
+    const timer = setTimeout(() => {
+      setCounters(prev => ({
+        ...prev,
+        visits: Math.floor(Math.random() * 10000) + 1000,
+        discord: Math.floor(Math.random() * 5000) + 500,
+        ranking: Math.floor(Math.random() * 100) + 1,
+        year: 2025
+      }));
+    }, 500);
     return () => clearTimeout(timer);
   }, []);
   
@@ -854,64 +893,49 @@ const WrapUp2025 = () => {
   
   // Memoized pages for performance
   const pages = useMemo(() => [
-    // Page 1: Welcome with username input
-    <div key="page-1" className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={20} />
-      
-      <div className="text-center max-w-4xl mx-auto relative z-20">
+    // Page 1: Welcome with username input - simplified
+    <div key="page-1" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11]">
+      <div className="max-w-4xl mx-auto relative z-20">
         {showUsernameInput ? (
           <UsernameInput onSubmit={handleUsernameSubmit} isLoading={isFetchingData} />
         ) : (
           <>
-            <div className="mb-16">
-              {/* User Profile Card */}
+            <div className="mb-12">
+              {/* User Profile Card - simplified */}
               {playerData && (
-                <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-6 mb-8 border border-[rgba(108,92,231,0.3)]">
-                  <div className="flex items-center gap-4">
+                <div className="bg-[#1a1a1f] rounded-xl p-4 mb-8 border border-[#6C5CE7]/20">
+                  <div className="flex items-center gap-3">
                     <img 
                       src={playerData.avatarUrl} 
                       alt={playerData.displayName} 
-                      className="w-16 h-16 rounded-full border-2 border-[#6C5CE7]"
+                      className="w-12 h-12 rounded-full border-2 border-[#6C5CE7]"
                     />
                     <div className="text-left">
-                      <h3 className="text-xl font-bold text-white">{playerData.displayName}</h3>
+                      <h3 className="text-lg font-bold text-white">{playerData.displayName}</h3>
                       <p className="text-[#A3A3A3] text-sm">@{playerData.name}</p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-xs px-2 py-1 bg-[#6C5CE7]/20 text-[#6C5CE7] rounded-full">
-                          {playerData.groupRank}
-                        </span>
-                        {playerData.isVerified && (
-                          <span className="text-blue-500 text-xs">✓ Verified</span>
-                        )}
+                      <div className="text-xs px-2 py-1 bg-[#6C5CE7]/20 text-[#6C5CE7] rounded-full inline-block mt-1">
+                        {playerData.groupRank}
                       </div>
                     </div>
                   </div>
                 </div>
               )}
               
-              <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
-                {username ? `${username}'s 2025 WRAPPED` : '2025 WRAPPED'}
+              <h1 className="text-4xl md:text-5xl font-black mb-6 text-white text-center">
+                {username ? `${username}'s 2025 Wrapped` : '2025 Wrapped'}
               </h1>
               
-              <div className="relative inline-block">
-                <p className="hero-subtitle text-lg md:text-xl lg:text-2xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
-                  Your year in Atlanta High Fire Alarm Simulation
-                </p>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-20 blur-xl -z-10" />
-              </div>
+              <p className="text-[#A3A3A3] text-center max-w-2xl mx-auto">
+                Your year in Atlanta High Fire Alarm Simulation
+              </p>
             </div>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <button 
                 onClick={() => setCurrentPage(1)}
-                className="group relative px-12 py-4 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#6C5CE7]/50 overflow-hidden"
+                className="px-8 py-3 bg-[#6C5CE7] text-white font-semibold rounded-lg transition-colors hover:bg-[#5a4bd7]"
               >
-                <span className="relative z-10 flex items-center gap-2">
-                  <Sparkles className="w-5 h-5" />
-                  START EXPERIENCE
-                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF] to-[#6C5CE7] opacity-0 group-hover:opacity-100 transition-opacity" />
+                Start Experience
               </button>
               
               <button 
@@ -920,375 +944,180 @@ const WrapUp2025 = () => {
                   setUsername('');
                   setPlayerData(null);
                 }}
-                className="px-6 py-3 bg-[rgba(255,255,255,0.1)] text-white font-medium rounded-xl border border-[rgba(255,255,255,0.2)] transition-all duration-300 hover:bg-[rgba(255,255,255,0.2)]"
+                className="px-6 py-3 bg-[#2a2a2f] text-white font-medium rounded-lg border border-[#3a3a3f] transition-colors hover:bg-[#3a3a3f]"
               >
                 Change User
               </button>
             </div>
           </>
         )}
-        
-        {/* Floating elements */}
-        <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-full opacity-20 blur-xl animate-pulse floating" />
-        <div className="absolute bottom-20 right-10 w-32 h-32 bg-gradient-to-br from-[#00E5FF] to-[#6C5CE7] rounded-full opacity-20 blur-xl animate-pulse floating" style={{ animationDelay: '1s' }} />
       </div>
     </div>,
 
-    // Page 2: Enhanced Stats with Roblox API data
-    <div key="page-2" className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={15} />
-      
-      <div className="max-w-7xl mx-auto w-full relative z-20">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-12 text-white floating">
-          <span className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
-            YOUR 2025 STATS
-          </span>
+    // Page 2: Stats - simplified
+    <div key="page-2" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11]">
+      <div className="max-w-6xl mx-auto w-full">
+        <h2 className="text-3xl font-bold text-center mb-12 text-white">
+          Your 2025 Stats
         </h2>
         
         {/* Roblox Game Stats */}
         <div className="mb-12">
-          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Gamepad2 className="w-6 h-6 text-[#00E5FF]" />
-            Roblox Game Stats
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-6">Game Stats</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AdvancedStatCard
-              value={counters.robloxVisits}
-              label="TOTAL VISITS"
-              description="Players who joined"
-              icon={Users}
-              delay={0}
-              trend="up"
-              funFact="That's like filling a stadium 450 times!"
-            />
-            
-            <AdvancedStatCard
-              value={counters.robloxPlaying}
-              label="PLAYING NOW"
-              description="Currently online"
-              icon={Activity}
-              delay={0.2}
-              trend="neutral"
-              funFact="Peak hours: 3-5 PM EST"
-            />
-            
-            <AdvancedStatCard
-              value={counters.robloxFavorites}
-              label="FAVORITES"
-              description="Players who love it"
-              icon={StarIcon}
-              delay={0.4}
-              trend="up"
-              funFact="97% positive rating!"
-            />
-            
-            <AdvancedStatCard
-              value={counters.robloxRating}
-              label="RATING"
-              description="Community score"
-              icon={Trophy}
-              delay={0.6}
-              trend="up"
-              funFact="Top 1% in simulation games!"
-            />
+            <SimpleStatCard value={counters.robloxVisits} label="Total Visits" icon={Users} delay={0} />
+            <SimpleStatCard value={counters.robloxPlaying} label="Playing Now" icon={Activity} delay={0.2} />
+            <SimpleStatCard value={counters.robloxFavorites} label="Favorites" icon={Trophy} delay={0.4} />
+            <SimpleStatCard value={counters.robloxRating} label="Rating" icon={StarIcon} delay={0.6} />
           </div>
         </div>
         
-        {/* Personal Stats */}
+        {/* Your Profile Stats */}
         <div className="mb-12">
-          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Crown className="w-6 h-6 text-[#6C5CE7]" />
-            Your Roblox Profile
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-6">Your Profile</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AdvancedStatCard
-              value={counters.friends}
-              label="FRIENDS"
-              description="Roblox friends"
-              icon={Users}
-              delay={0.8}
-              trend="up"
-              funFact="Social butterfly!"
-            />
-            
-            <AdvancedStatCard
-              value={counters.groups}
-              label="GROUPS"
-              description="Roblox groups"
-              icon={Crown}
-              delay={1.0}
-              trend="up"
-              funFact="Community leader!"
-            />
-            
-            <AdvancedStatCard
-              value={counters.accountAge}
-              label="ACCOUNT AGE"
-              description="Years on Roblox"
-              icon={Clock}
-              delay={1.2}
-              trend="up"
-              funFact="Veteran player!"
-            />
-            
-            <AdvancedStatCard
-              value={playerData?.isVerified ? "Yes" : "No"}
-              label="VERIFIED"
-              description="Roblox verified"
-              icon={StarIcon}
-              delay={1.4}
-              trend={playerData?.isVerified ? "up" : "neutral"}
-              funFact={playerData?.isVerified ? "Elite status!" : "Keep building!"}
-            />
+            <SimpleStatCard value={counters.friends} label="Friends" icon={Users} delay={0.8} />
+            <SimpleStatCard value={counters.groups} label="Groups" icon={Crown} delay={1.0} />
+            <SimpleStatCard value={counters.accountAge} label="Account Age (years)" icon={Clock} delay={1.2} />
+            <SimpleStatCard value={playerData?.isVerified ? "Yes" : "No"} label="Verified" icon={StarIcon} delay={1.4} />
           </div>
         </div>
         
         {/* Game Stats */}
         <div className="mb-12">
-          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
-            <Crown className="w-6 h-6 text-[#6C5CE7]" />
-            Your Game Stats
-          </h3>
+          <h3 className="text-xl font-bold text-white mb-6">Your Game Stats</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AdvancedStatCard
-              value={counters.alarmsPulled}
-              label="ALARMS PULLED"
-              description="Massive dedication"
-              icon={Flame}
-              delay={1.6}
-              trend="up"
-              funFact="You're in the top 5%!"
-            />
-            
-            <AdvancedStatCard
-              value={counters.drillsCompleted}
-              label="DRILLS COMPLETED"
-              description="Expert training"
-              icon={Target}
-              delay={1.8}
-              trend="up"
-              funFact="Perfect score 23 times!"
-            />
-            
-            <AdvancedStatCard
-              value={`${counters.timePlayed}h`}
-              label="TIME PLAYED"
-              description="True commitment"
-              icon={Clock}
-              delay={2.0}
-              trend="up"
-              funFact="That's 2 full days!"
-            />
-            
-            <AdvancedStatCard
-              value={counters.achievements}
-              label="ACHIEVEMENTS"
-              description="Elite status"
-              icon={Award}
-              delay={2.2}
-              trend="up"
-              funFact="3 legendary unlocks!"
-            />
+            <SimpleStatCard value={counters.alarmsPulled} label="Alarms Pulled" icon={Flame} delay={1.6} />
+            <SimpleStatCard value={counters.drillsCompleted} label="Drills Completed" icon={Target} delay={1.8} />
+            <SimpleStatCard value={`${counters.timePlayed}h`} label="Time Played" icon={Clock} delay={2.0} />
+            <SimpleStatCard value={counters.achievements} label="Achievements" icon={Award} delay={2.2} />
           </div>
         </div>
         
-        {/* Fun Mini Game */}
-        <MiniGame onComplete={(score) => setMiniGameScore(score)} />
+        {/* Simple Mini Game */}
+        <div className="flex justify-center">
+          <SimpleMiniGame onComplete={(score) => setMiniGameScore(score)} />
+        </div>
       </div>
     </div>,
 
-    // Page 3: Enhanced Achievements with progress tracking
-    <div key="page-3" className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={15} />
-      
-      <div className="max-w-5xl mx-auto w-full relative z-20">
-        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-12 text-white floating">
-          <span className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
-            ACHIEVEMENT COLLECTION
-          </span>
+    // Page 3: Achievements - simplified
+    <div key="page-3" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11]">
+      <div className="max-w-4xl mx-auto w-full">
+        <h2 className="text-3xl font-bold text-center mb-12 text-white">
+          Achievement Collection
         </h2>
         
         {/* Achievement Badges Grid */}
         <div className="mb-12">
-          <h3 className="text-base md:text-lg lg:text-xl font-bold text-white mb-6">Your Badge Collection</h3>
+          <h3 className="text-xl font-bold text-white mb-6 text-center">Your Badges</h3>
           <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-12">
-            <AchievementBadge icon="🔥" name="Fire Starter" unlocked rarity="common" />
-            <AchievementBadge icon="🚨" name="Alert Pro" unlocked rarity="rare" />
-            <AchievementBadge icon="⚡" name="Speed Demon" unlocked rarity="epic" />
-            <AchievementBadge icon="🌟" name="Superstar" unlocked={false} rarity="legendary" />
-            <AchievementBadge icon="💎" name="Diamond" unlocked rarity="epic" />
-            <AchievementBadge icon="🏆" name="Champion" unlocked rarity="rare" />
-            <AchievementBadge icon="👑" name="Royalty" unlocked={false} rarity="legendary" />
-            <AchievementBadge icon="🎯" name="Perfect" unlocked rarity="common" />
+            <SimpleAchievementBadge icon="🔥" name="Fire Starter" unlocked />
+            <SimpleAchievementBadge icon="🚨" name="Alert Pro" unlocked />
+            <SimpleAchievementBadge icon="⚡" name="Speed Demon" unlocked />
+            <SimpleAchievementBadge icon="🌟" name="Superstar" unlocked={false} />
+            <SimpleAchievementBadge icon="💎" name="Diamond" unlocked />
+            <SimpleAchievementBadge icon="🏆" name="Champion" unlocked />
+            <SimpleAchievementBadge icon="👑" name="Royalty" unlocked={false} />
+            <SimpleAchievementBadge icon="🎯" name="Perfect" unlocked />
           </div>
         </div>
         
-        <div className="space-y-4">
-          {[
-            {
-              name: "Master Alarm Puller",
-              description: "Pulled 1000+ alarms with perfect timing",
-              icon: "🔥",
-              color: "#6C5CE7",
-              progress: 100,
-              unlocked: true,
-              reward: "Exclusive Fire Master Badge"
-            },
-            {
-              name: "Drill Expert",
-              description: "Completed 50+ emergency drills",
-              icon: "🚨",
-              color: "#00E5FF",
-              progress: 89,
-              unlocked: true,
-              reward: "500 Robux"
-            },
-            {
-              name: "Speed Demon",
-              description: "Fastest evacuation time recorded",
-              icon: "⚡",
-              color: "#FF6B6B",
-              progress: 100,
-              unlocked: true,
-              reward: "Speed Demon Title"
-            },
-            {
-              name: "Community Hero",
-              description: "Helped 100+ players during drills",
-              icon: "🌟",
-              color: "#2ED573",
-              progress: 75,
-              unlocked: false,
-              reward: "Hero Badge + 200 Robux"
-            },
-            {
-              name: "Perfect Record",
-              description: "100% success rate in all scenarios",
-              icon: "💎",
-              color: "#6C5CE7",
-              progress: 95,
-              unlocked: false,
-              reward: "Perfectionist Badge"
-            },
-            {
-              name: "Night Owl",
-              description: "Completed 20+ night drills",
-              icon: "🦉",
-              color: "#00E5FF",
-              progress: 60,
-              unlocked: false,
-              reward: "Night Owl Title"
-            },
-            {
-              name: "Veteran Player",
-              description: "Played for over 100 hours",
-              icon: "🎖️",
-              color: "#FF6B6B",
-              progress: 42,
-              unlocked: false,
-              reward: "Veteran Status"
-            },
-            {
-              name: "Social Butterfly",
-              description: "Made 50+ friends in-game",
-              icon: "🦋",
-              color: "#2ED573",
-              progress: 88,
-              unlocked: true,
-              reward: "Friend Master Badge"
-            }
-          ].map((achievement, i) => (
-            <AdvancedAchievementCard
-              key={i}
-              achievement={achievement}
-              index={i}
-            />
-          ))}
+        {/* Achievement Progress */}
+        <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20">
+          <h3 className="text-xl font-bold text-white mb-6">Your Progress</h3>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-white mb-2">
+                <span>Fire Alarm Master</span>
+                <span>75%</span>
+              </div>
+              <div className="w-full bg-[#2a2a2f] rounded-full h-2">
+                <div className="w-3/4 bg-[#6C5CE7] h-2 rounded-full"></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-white mb-2">
+                <span>Speed Runner</span>
+                <span>60%</span>
+              </div>
+              <div className="w-full bg-[#2a2a2f] rounded-full h-2">
+                <div className="w-3/5 bg-[#6C5CE7] h-2 rounded-full"></div>
+              </div>
+            </div>
+            <div>
+              <div className="flex justify-between text-white mb-2">
+                <span>Perfect Score</span>
+                <span>90%</span>
+              </div>
+              <div className="w-full bg-[#2a2a2f] rounded-full h-2">
+                <div className="w-11/12 bg-[#6C5CE7] h-2 rounded-full"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>,
 
-    // Page 4: Enhanced Thank You with social sharing
-    <div key="page-4" className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={20} />
-      
-      <div className="max-w-4xl mx-auto w-full relative z-20">
-        <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-3xl p-16 border border-[rgba(108,92,231,0.3)] hover:border-[#6C5CE7]/50 transition-all duration-300 relative overflow-hidden">
-          {/* Animated background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-[#6C5CE7]/10 to-[#00E5FF]/10 opacity-50" />
-          
-          <div className="text-center mb-12 relative z-10">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
-              THANK YOU!
+    // Page 4: Thank You - simplified
+    <div key="page-4" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11]">
+      <div className="max-w-4xl mx-auto w-full">
+        <div className="bg-[#1a1a1f] rounded-2xl p-8 border border-[#6C5CE7]/20">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-6 text-white">
+              Thank You!
             </h2>
             
-            <div className="relative inline-block mb-8">
-              <p className="text-base md:text-lg text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
-                For being part of our amazing community in 2025. Your dedication makes Atlanta High the #1 fire alarm simulation game!
-              </p>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-10 blur-xl -z-10" />
-            </div>
+            <p className="text-[#A3A3A3] mb-8 max-w-2xl mx-auto">
+              For being part of our amazing community in 2025. Your dedication makes Atlanta High the #1 fire alarm simulation game!
+            </p>
             
             {/* Stats summary */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               <div className="text-center">
-                <div className="text-2xl font-black text-[#6C5CE7] mb-1">{counters.robloxVisits.toLocaleString()}</div>
-                <div className="text-xs text-[#A3A3A3]">Total Visits</div>
+                <div className="text-2xl font-bold text-[#6C5CE7]">{counters.robloxVisits.toLocaleString()}</div>
+                <div className="text-sm text-[#A3A3A3]">Total Visits</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-[#00E5FF] mb-1">{counters.robloxFavorites.toLocaleString()}</div>
-                <div className="text-xs text-[#A3A3A3]">Favorites</div>
+                <div className="text-2xl font-bold text-[#6C5CE7]">{counters.robloxPlaying}</div>
+                <div className="text-sm text-[#A3A3A3]">Playing Now</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-[#FF6B6B] mb-1">{counters.timePlayed}h</div>
-                <div className="text-xs text-[#A3A3A3]">Hours Played</div>
+                <div className="text-2xl font-bold text-[#6C5CE7]">{counters.alarmsPulled.toLocaleString()}</div>
+                <div className="text-sm text-[#A3A3A3]">Alarms Pulled</div>
               </div>
               <div className="text-center">
-                <div className="text-2xl font-black text-[#2ED573] mb-1">{counters.achievements}</div>
-                <div className="text-xs text-[#A3A3A3]">Achievements</div>
+                <div className="text-2xl font-bold text-[#6C5CE7]">{miniGameScore}</div>
+                <div className="text-sm text-[#A3A3A3]">Game Score</div>
               </div>
             </div>
             
-            {/* Mini game score */}
-            {miniGameScore > 0 && (
-              <div className="mb-8 p-4 bg-[rgba(108,92,231,0.1)] rounded-xl">
-                <p className="text-[#00E5FF] font-bold">
-                  🎮 Mini Game High Score: {miniGameScore} clicks!
-                </p>
-              </div>
-            )}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button 
+                onClick={() => setCurrentPage(0)}
+                className="px-6 py-3 bg-[#6C5CE7] text-white font-semibold rounded-lg transition-colors hover:bg-[#5a4bd7]"
+              >
+                View Again
+              </button>
+              
+              <button 
+                onClick={() => {
+                  setShowUsernameInput(true);
+                  setUsername('');
+                  setPlayerData(null);
+                  setCurrentPage(0);
+                }}
+                className="px-6 py-3 bg-[#2a2a2f] text-white font-medium rounded-lg border border-[#3a3a3f] transition-colors hover:bg-[#3a3a3f]"
+              >
+                New User
+              </button>
+            </div>
           </div>
-          
-          <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
-            <button className="group relative px-8 py-4 bg-gradient-to-r from-[#00E5FF] to-[#6C5CE7] text-[#0E0E11] font-semibold rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#00E5FF]/50 overflow-hidden">
-              <span className="relative z-10 flex items-center gap-2">
-                <Share2 className="w-5 h-5" />
-                SHARE RESULTS
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-            
-            <button 
-              onClick={() => setCurrentPage(0)}
-              className="group relative px-8 py-4 bg-[rgba(255,255,255,0.1)] text-white font-semibold rounded-2xl border border-[rgba(255,255,255,0.2)] transition-all duration-300 hover:scale-105 hover:bg-[rgba(255,255,255,0.2)] overflow-hidden"
-            >
-              <span className="relative z-10 flex items-center gap-2">
-                <Activity className="w-5 h-5" />
-                REPLAY
-              </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-0 group-hover:opacity-20 transition-opacity" />
-            </button>
-          </div>
-          
-          {/* Floating hearts animation */}
-          <div className="absolute top-10 right-10 text-2xl animate-bounce floating" style={{ animationDelay: '0s' }}>❤️</div>
-          <div className="absolute bottom-10 left-10 text-2xl animate-bounce floating" style={{ animationDelay: '0.5s' }}>⭐</div>
-          <div className="absolute top-1/2 right-20 text-2xl animate-bounce floating" style={{ animationDelay: '1s' }}>🎉</div>
         </div>
       </div>
-    </div>
-  ], [counters, currentPage, animateCounter, gameData, playerData, miniGameScore]);
-  
+    </div>,
+  ], [counters, currentPage, playerData, miniGameScore, showUsernameInput]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -1300,30 +1129,33 @@ const WrapUp2025 = () => {
         setCurrentPage(prev => Math.max(0, prev - 1));
       }
     };
-    
+
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [pages.length]);
-  
-  // Parallax effect based on mouse position - throttled
-  const parallaxStyle = useMemo(() => ({
-    transform: `translate(${Math.round(mousePosition.x * 0.005)}px, ${Math.round(mousePosition.y * 0.005)}px)`
-  }), [mousePosition]);
-  
-  if (!isLoaded) {
-    return (
-      <div className="min-h-screen bg-[#0E0E11] flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 border-4 border-[#6C5CE7] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-[#A3A3A3] text-lg">Loading your 2025 experience...</p>
-        </div>
-      </div>
-    );
-  }
-  
+  }, []);
+
+  // Mouse movement for parallax
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      const x = (e.clientX / window.innerWidth - 0.5) * 2;
+      const y = (e.clientY / window.innerHeight - 0.5) * 2;
+      setMousePosition({ x, y });
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Parallax style calculation
+  const parallaxStyle = useCallback(() => {
+    return {
+      transform: `translateX(${mousePosition.x * 10}px) translateY(${mousePosition.y * 10}px)`
+    };
+  }, [mousePosition]);
+
   return (
-    <div ref={sectionRef} className="min-h-screen bg-[#0E0E11] text-white overflow-hidden" style={parallaxStyle}>
-      {/* Enhanced Progress Bar */}
+    <div ref={sectionRef} className="min-h-screen bg-[#0E0E11] text-white overflow-hidden" style={parallaxStyle()}>
+      {/* Progress Bar */}
       <div className="fixed top-0 left-0 right-0 z-50 bg-[rgba(14,14,17,0.8)] backdrop-blur-xl border-b border-[rgba(255,255,255,0.1)]">
         <div className="max-w-4xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between mb-2">
@@ -1332,20 +1164,18 @@ const WrapUp2025 = () => {
           </div>
           <div className="w-full bg-[rgba(255,255,255,0.1)] rounded-full h-3 overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] rounded-full transition-all duration-700 ease-out relative"
+              className="h-full bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] rounded-full transition-all duration-700 ease-out"
               style={{ width: `${((currentPage + 1) / pages.length) * 100}%` }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent to-white opacity-30 animate-shimmer" />
-            </div>
+            />
           </div>
         </div>
       </div>
 
-      {/* Enhanced Navigation */}
+      {/* Navigation */}
       <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-4 bg-[rgba(14,14,17,0.8)] backdrop-blur-xl rounded-full px-6 py-3 border border-[rgba(255,255,255,0.1)]">
         <button 
           onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-          className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.1)] flex items-center justify-center text-white hover:bg-[rgba(255,255,255,0.2)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110"
+          className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.1)] flex items-center justify-center text-white hover:bg-[rgba(255,255,255,0.2)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === 0}
         >
           <ChevronRight className="w-5 h-5 rotate-180" />
@@ -1359,7 +1189,7 @@ const WrapUp2025 = () => {
               className={`transition-all duration-300 ${
                 i === currentPage 
                   ? 'w-8 h-2 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] rounded-full' 
-                  : 'w-2 h-2 bg-[rgba(255,255,255,0.3)] rounded-full hover:bg-[rgba(255,255,255,0.5)] hover:scale-125'
+                  : 'w-2 h-2 bg-[rgba(255,255,255,0.3)] rounded-full hover:bg-[rgba(255,255,255,0.5)]'
               }`}
             />
           ))}
@@ -1367,42 +1197,19 @@ const WrapUp2025 = () => {
         
         <button 
           onClick={() => setCurrentPage(Math.min(pages.length - 1, currentPage + 1))}
-          className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.1)] flex items-center justify-center text-white hover:bg-[rgba(255,255,255,0.2)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-110"
+          className="w-10 h-10 rounded-full bg-[rgba(255,255,255,0.1)] flex items-center justify-center text-white hover:bg-[rgba(255,255,255,0.2)] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={currentPage === pages.length - 1}
         >
           <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Page Content with enhanced transitions */}
+      {/* Page Content */}
       <div className="pt-20">
         <div className="relative">
           {pages[currentPage]}
         </div>
       </div>
-      
-      {/* Custom styles for animations */}
-      <style>{`
-        @keyframes gradient {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        
-        @keyframes shimmer {
-          0% { transform: translateX(-100%); }
-          100% { transform: translateX(100%); }
-        }
-        
-        .animate-gradient {
-          background-size: 200% 200%;
-          animation: gradient 3s ease infinite;
-        }
-        
-        .animate-shimmer {
-          animation: shimmer 2s infinite;
-        }
-      `}</style>
     </div>
   );
 };
