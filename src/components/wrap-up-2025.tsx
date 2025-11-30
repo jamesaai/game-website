@@ -7,6 +7,67 @@ gsap.registerPlugin(ScrollTrigger);
 
 // Roblox API service
 class RobloxAPI {
+  private static readonly USERS_URL = 'https://users.roblox.com/v1/users';
+  private static readonly GROUPS_URL = 'https://groups.roblox.com/v1/groups';
+  private static readonly AVATAR_URL = 'https://avatar.roblox.com/v1/users';
+  private static readonly GROUP_ID = 35390256;
+  
+  static async getUserIdFromUsername(username: string) {
+    try {
+      const response = await fetch(`${this.USERS_URL}/get-by-username?username=${encodeURIComponent(username)}`);
+      const data = await response.json();
+      return data.id;
+    } catch (error) {
+      console.error('Failed to get user ID from username:', error);
+      return null;
+    }
+  }
+  
+  static async getPlayerData(userId: number) {
+    try {
+      // Get user info
+      const userResponse = await fetch(`${this.USERS_URL}/${userId}`);
+      const userData = await userResponse.json();
+      
+      // Get avatar
+      const avatarResponse = await fetch(`${this.AVATAR_URL}/${userId}/avatar`);
+      const avatarData = await avatarResponse.json();
+      
+      // Get group membership
+      const groupResponse = await fetch(`${this.GROUPS_URL}/${this.GROUP_ID}/members?userId=${userId}`);
+      const groupData = await groupResponse.json();
+      
+      // Get user's groups
+      const userGroupsResponse = await fetch(`${this.USERS_URL}/${userId}/groups`);
+      const userGroupsData = await userGroupsResponse.json();
+      
+      // Get friends
+      const friendsResponse = await fetch(`${this.USERS_URL}/${userId}/friends`);
+      const friendsData = await friendsResponse.json();
+      
+      return {
+        id: userData.id,
+        name: userData.name,
+        displayName: userData.displayName,
+        description: userData.description,
+        created: userData.created,
+        isVerified: userData.isVerified,
+        isDeleted: userData.isDeleted,
+        externalAppDisplayName: userData.externalAppDisplayName,
+        avatarUrl: avatarData?.imageUrl || `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
+        groupRank: groupData.data?.[0]?.role?.name || 'Guest',
+        groupRole: groupData.data?.[0]?.role,
+        groups: userGroupsData.data || [],
+        friends: friendsData.data || [],
+        totalFriends: friendsData.data?.length || 0,
+        totalGroups: userGroupsData.data?.length || 0
+      };
+    } catch (error) {
+      console.error('Failed to fetch player data:', error);
+      return null;
+    }
+  }
+  
   static async getGameStats() {
     try {
       // Mock data for now - replace with actual Roblox API calls
@@ -51,7 +112,71 @@ class RobloxAPI {
   }
 }
 
-// Fun mini-game component
+// Username input component
+const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) => void; isLoading: boolean }) => {
+  const [username, setUsername] = useState('');
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (username.trim()) {
+      onSubmit(username.trim());
+    }
+  };
+  
+  return (
+    <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-3xl p-8 border border-[rgba(108,92,231,0.3)] max-w-md mx-auto">
+      <div className="text-center mb-6">
+        <div className="w-20 h-20 bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+          👤
+        </div>
+        <h2 className="text-2xl font-bold text-white mb-2">Enter Your Roblox Username</h2>
+        <p className="text-[#A3A3A3] text-sm">We'll fetch your real Roblox data for your personalized 2025 wrapped!</p>
+      </div>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <input
+            ref={inputRef}
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Roblox Username"
+            className="w-full px-4 py-3 bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.2)] rounded-xl text-white placeholder-[#A3A3A3] focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/50 transition-all"
+            disabled={isLoading}
+          />
+        </div>
+        
+        <button
+          type="submit"
+          disabled={!username.trim() || isLoading}
+          className="w-full py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#6C5CE7]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+        >
+          {isLoading ? (
+            <div className="flex items-center justify-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              Loading...
+            </div>
+          ) : (
+            'Get My Wrapped'
+          )}
+        </button>
+      </form>
+      
+      <div className="mt-4 text-center">
+        <p className="text-xs text-[#A3A3A3]">
+          We only access public profile information
+        </p>
+      </div>
+    </div>
+  );
+};
 const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
@@ -518,7 +643,10 @@ const WrapUp2025 = () => {
     robloxVisits: 0,
     robloxPlaying: 0,
     robloxFavorites: 0,
-    robloxRating: 0
+    robloxRating: 0,
+    friends: 0,
+    groups: 0,
+    accountAge: 0
   });
   const [currentPage, setCurrentPage] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -526,10 +654,57 @@ const WrapUp2025 = () => {
   const [gameData, setGameData] = useState<any>(null);
   const [playerData, setPlayerData] = useState<any>(null);
   const [miniGameScore, setMiniGameScore] = useState(0);
+  const [username, setUsername] = useState('');
+  const [isFetchingData, setIsFetchingData] = useState(false);
+  const [showUsernameInput, setShowUsernameInput] = useState(true);
   
   const sectionRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const achievementsRef = useRef<HTMLDivElement>(null);
+  
+  // Handle username submission
+  const handleUsernameSubmit = async (submittedUsername: string) => {
+    setIsFetchingData(true);
+    setUsername(submittedUsername);
+    
+    try {
+      // Get user ID from username
+      const userId = await RobloxAPI.getUserIdFromUsername(submittedUsername);
+      
+      if (!userId) {
+        alert('User not found! Please check your username.');
+        setIsFetchingData(false);
+        return;
+      }
+      
+      // Get player data
+      const playerInfo = await RobloxAPI.getPlayerData(userId);
+      
+      if (playerInfo) {
+        setPlayerData(playerInfo);
+        
+        // Update counters with real data
+        setCounters(prev => ({
+          ...prev,
+          friends: playerInfo.totalFriends,
+          groups: playerInfo.totalGroups,
+          accountAge: Math.floor((Date.now() - new Date(playerInfo.created).getTime()) / (1000 * 60 * 60 * 24 * 365)),
+          // Mock some game-specific stats for now
+          alarmsPulled: Math.floor(Math.random() * 1000) + 100,
+          drillsCompleted: Math.floor(Math.random() * 50) + 10,
+          timePlayed: Math.floor(Math.random() * 100) + 20,
+          achievements: Math.floor(Math.random() * 20) + 5
+        }));
+        
+        setShowUsernameInput(false);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      alert('Error fetching user data. Please try again.');
+    } finally {
+      setIsFetchingData(false);
+    }
+  };
   
   // Fetch Roblox data
   useEffect(() => {
@@ -690,37 +865,79 @@ const WrapUp2025 = () => {
   
   // Memoized pages for performance
   const pages = useMemo(() => [
-    // Page 1: Welcome with enhanced effects
+    // Page 1: Welcome with username input
     <div key="page-1" className="min-h-screen flex items-center justify-center px-6 relative">
       <ParticleSystem count={20} />
       
       <div className="text-center max-w-4xl mx-auto relative z-20">
-        <div className="mb-16">
-          <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
-            2025 WRAPPED
-          </h1>
-          
-          <div className="relative inline-block">
-            <p className="hero-subtitle text-lg md:text-xl lg:text-2xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
-              Your year in Atlanta High Fire Alarm Simulation
-            </p>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-20 blur-xl -z-10" />
-          </div>
-        </div>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button 
-            onClick={() => setCurrentPage(1)}
-            className="group relative px-12 py-4 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#6C5CE7]/50 overflow-hidden"
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              START EXPERIENCE
-              <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </span>
-            <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF] to-[#6C5CE7] opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
-        </div>
+        {showUsernameInput ? (
+          <UsernameInput onSubmit={handleUsernameSubmit} isLoading={isFetchingData} />
+        ) : (
+          <>
+            <div className="mb-16">
+              {/* User Profile Card */}
+              {playerData && (
+                <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-6 mb-8 border border-[rgba(108,92,231,0.3)]">
+                  <div className="flex items-center gap-4">
+                    <img 
+                      src={playerData.avatarUrl} 
+                      alt={playerData.displayName} 
+                      className="w-16 h-16 rounded-full border-2 border-[#6C5CE7]"
+                    />
+                    <div className="text-left">
+                      <h3 className="text-xl font-bold text-white">{playerData.displayName}</h3>
+                      <p className="text-[#A3A3A3] text-sm">@{playerData.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-xs px-2 py-1 bg-[#6C5CE7]/20 text-[#6C5CE7] rounded-full">
+                          {playerData.groupRank}
+                        </span>
+                        {playerData.isVerified && (
+                          <span className="text-blue-500 text-xs">✓ Verified</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
+                {username ? `${username}'s 2025 WRAPPED` : '2025 WRAPPED'}
+              </h1>
+              
+              <div className="relative inline-block">
+                <p className="hero-subtitle text-lg md:text-xl lg:text-2xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
+                  Your year in Atlanta High Fire Alarm Simulation
+                </p>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-20 blur-xl -z-10" />
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <button 
+                onClick={() => setCurrentPage(1)}
+                className="group relative px-12 py-4 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-2xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#6C5CE7]/50 overflow-hidden"
+              >
+                <span className="relative z-10 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5" />
+                  START EXPERIENCE
+                  <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </span>
+                <div className="absolute inset-0 bg-gradient-to-r from-[#00E5FF] to-[#6C5CE7] opacity-0 group-hover:opacity-100 transition-opacity" />
+              </button>
+              
+              <button 
+                onClick={() => {
+                  setShowUsernameInput(true);
+                  setUsername('');
+                  setPlayerData(null);
+                }}
+                className="px-6 py-3 bg-[rgba(255,255,255,0.1)] text-white font-medium rounded-xl border border-[rgba(255,255,255,0.2)] transition-all duration-300 hover:bg-[rgba(255,255,255,0.2)]"
+              >
+                Change User
+              </button>
+            </div>
+          </>
+        )}
         
         {/* Floating elements */}
         <div className="absolute top-20 left-10 w-20 h-20 bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-full opacity-20 blur-xl animate-pulse floating" />
@@ -792,7 +1009,56 @@ const WrapUp2025 = () => {
         <div className="mb-12">
           <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Crown className="w-6 h-6 text-[#6C5CE7]" />
-            Your Personal Stats
+            Your Roblox Profile
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AdvancedStatCard
+              value={counters.friends}
+              label="FRIENDS"
+              description="Roblox friends"
+              icon={Users}
+              delay={0.8}
+              trend="up"
+              funFact="Social butterfly!"
+            />
+            
+            <AdvancedStatCard
+              value={counters.groups}
+              label="GROUPS"
+              description="Roblox groups"
+              icon={Crown}
+              delay={1.0}
+              trend="up"
+              funFact="Community leader!"
+            />
+            
+            <AdvancedStatCard
+              value={counters.accountAge}
+              label="ACCOUNT AGE"
+              description="Years on Roblox"
+              icon={Clock}
+              delay={1.2}
+              trend="up"
+              funFact="Veteran player!"
+            />
+            
+            <AdvancedStatCard
+              value={playerData?.isVerified ? "Yes" : "No"}
+              label="VERIFIED"
+              description="Roblox verified"
+              icon={StarIcon}
+              delay={1.4}
+              trend={playerData?.isVerified ? "up" : "neutral"}
+              funFact={playerData?.isVerified ? "Elite status!" : "Keep building!"}
+            />
+          </div>
+        </div>
+        
+        {/* Game Stats */}
+        <div className="mb-12">
+          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <Crown className="w-6 h-6 text-[#6C5CE7]" />
+            Your Game Stats
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <AdvancedStatCard
@@ -800,7 +1066,7 @@ const WrapUp2025 = () => {
               label="ALARMS PULLED"
               description="Massive dedication"
               icon={Flame}
-              delay={0.8}
+              delay={1.6}
               trend="up"
               funFact="You're in the top 5%!"
             />
@@ -810,7 +1076,7 @@ const WrapUp2025 = () => {
               label="DRILLS COMPLETED"
               description="Expert training"
               icon={Target}
-              delay={1.0}
+              delay={1.8}
               trend="up"
               funFact="Perfect score 23 times!"
             />
@@ -820,7 +1086,7 @@ const WrapUp2025 = () => {
               label="TIME PLAYED"
               description="True commitment"
               icon={Clock}
-              delay={1.2}
+              delay={2.0}
               trend="up"
               funFact="That's 2 full days!"
             />
@@ -830,7 +1096,7 @@ const WrapUp2025 = () => {
               label="ACHIEVEMENTS"
               description="Elite status"
               icon={Award}
-              delay={1.4}
+              delay={2.2}
               trend="up"
               funFact="3 legendary unlocks!"
             />
