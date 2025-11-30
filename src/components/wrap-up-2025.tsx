@@ -8,8 +8,9 @@ gsap.registerPlugin(ScrollTrigger);
 // Roblox API service
 class RobloxAPI {
   private static readonly USERS_URL = 'https://users.roblox.com/v1/users';
-  private static readonly GROUPS_URL = 'https://groups.roblox.com/v1/groups';
-  private static readonly AVATAR_URL = 'https://avatar.roblox.com/v1/users';
+  private static readonly FRIENDS_URL = 'https://friends.roblox.com/v1/users';
+  private static readonly GROUPS_URL = 'https://groups.roblox.com/v2/groups';
+  private static readonly THUMBNAIL_URL = 'https://thumbnails.roblox.com/v1/users';
   private static readonly GROUP_ID = 35390256;
   
   static async getUserIdFromUsername(username: string) {
@@ -29,21 +30,24 @@ class RobloxAPI {
       const userResponse = await fetch(`${this.USERS_URL}/${userId}`);
       const userData = await userResponse.json();
       
-      // Get avatar
-      const avatarResponse = await fetch(`${this.AVATAR_URL}/${userId}/avatar`);
-      const avatarData = await avatarResponse.json();
-      
-      // Get group membership
-      const groupResponse = await fetch(`${this.GROUPS_URL}/${this.GROUP_ID}/members?userId=${userId}`);
-      const groupData = await groupResponse.json();
+      // Get user's avatar thumbnails
+      const thumbnailResponse = await fetch(`${this.THUMBNAIL_URL}/${userId}/avatar-headshot?size=150x150&format=Png&isCircular=true`);
+      const thumbnailData = await thumbnailResponse.json();
       
       // Get user's groups
-      const userGroupsResponse = await fetch(`${this.USERS_URL}/${userId}/groups`);
+      const userGroupsResponse = await fetch(`${this.GROUPS_URL}/${userId}/groups/roles`);
       const userGroupsData = await userGroupsResponse.json();
       
       // Get friends
-      const friendsResponse = await fetch(`${this.USERS_URL}/${userId}/friends`);
+      const friendsResponse = await fetch(`${this.FRIENDS_URL}/${userId}/friends`);
       const friendsData = await friendsResponse.json();
+      
+      // Check if user is in our specific group
+      const groupMembershipResponse = await fetch(`${this.GROUPS_URL}/${this.GROUP_ID}/memberships?userId=${userId}`);
+      const groupMembershipData = await groupMembershipResponse.json();
+      
+      // Find the user's role in our group
+      const userGroupRole = groupMembershipData.data?.find((membership: any) => membership.user?.userId === userId);
       
       return {
         id: userData.id,
@@ -54,9 +58,9 @@ class RobloxAPI {
         isVerified: userData.isVerified,
         isDeleted: userData.isDeleted,
         externalAppDisplayName: userData.externalAppDisplayName,
-        avatarUrl: avatarData?.imageUrl || `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
-        groupRank: groupData.data?.[0]?.role?.name || 'Guest',
-        groupRole: groupData.data?.[0]?.role,
+        avatarUrl: thumbnailData.data?.[0]?.imageUrl || `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
+        groupRank: userGroupRole?.role?.name || 'Guest',
+        groupRole: userGroupRole?.role,
         groups: userGroupsData.data || [],
         friends: friendsData.data || [],
         totalFriends: friendsData.data?.length || 0,
@@ -112,7 +116,7 @@ class RobloxAPI {
   }
 }
 
-// Username input component
+// Username input component - simplified
 const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) => void; isLoading: boolean }) => {
   const [username, setUsername] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -131,49 +135,34 @@ const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) =
   };
   
   return (
-    <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-3xl p-8 border border-[rgba(108,92,231,0.3)] max-w-md mx-auto">
+    <div className="bg-[#1a1a1f] rounded-2xl p-8 max-w-md mx-auto border border-[#6C5CE7]/30">
       <div className="text-center mb-6">
-        <div className="w-20 h-20 bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+        <div className="w-16 h-16 bg-[#6C5CE7] rounded-xl flex items-center justify-center text-2xl mx-auto mb-4">
           👤
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Enter Your Roblox Username</h2>
-        <p className="text-[#A3A3A3] text-sm">We'll fetch your real Roblox data for your personalized 2025 wrapped!</p>
+        <h2 className="text-2xl font-bold text-white mb-2">Enter Roblox Username</h2>
+        <p className="text-[#A3A3A3] text-sm">Get your personalized 2025 wrapped</p>
       </div>
       
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <input
-            ref={inputRef}
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            placeholder="Roblox Username"
-            className="w-full px-4 py-3 bg-[rgba(255,255,255,0.1)] border border-[rgba(255,255,255,0.2)] rounded-xl text-white placeholder-[#A3A3A3] focus:outline-none focus:border-[#6C5CE7] focus:ring-2 focus:ring-[#6C5CE7]/50 transition-all"
-            disabled={isLoading}
-          />
-        </div>
+        <input
+          ref={inputRef}
+          type="text"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Username"
+          className="w-full px-4 py-3 bg-[#2a2a2f] border border-[#3a3a3f] rounded-lg text-white placeholder-[#A3A3A3] focus:outline-none focus:border-[#6C5CE7] transition-colors"
+          disabled={isLoading}
+        />
         
         <button
           type="submit"
           disabled={!username.trim() || isLoading}
-          className="w-full py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-[#6C5CE7]/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          className="w-full py-3 bg-[#6C5CE7] text-white font-semibold rounded-lg transition-colors hover:bg-[#5a4bd7] disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? (
-            <div className="flex items-center justify-center gap-2">
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              Loading...
-            </div>
-          ) : (
-            'Get My Wrapped'
-          )}
+          {isLoading ? 'Loading...' : 'Get Wrapped'}
         </button>
       </form>
-      
-      <div className="mt-4 text-center">
-        <p className="text-xs text-[#A3A3A3]">
-          We only access public profile information
-        </p>
-      </div>
     </div>
   );
 };
