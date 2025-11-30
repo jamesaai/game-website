@@ -15,9 +15,31 @@ class RobloxAPI {
   
   static async getUserIdFromUsername(username: string) {
     try {
-      const response = await fetch(`${this.USERS_URL}/get-by-username?username=${encodeURIComponent(username)}`);
+      const response = await fetch(`${this.USERS_URL}/usernames/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          usernames: [username],
+          excludeBannedUsers: false
+        })
+      });
+      
+      if (!response.ok) {
+        console.error('API Response:', response.status, response.statusText);
+        return null;
+      }
+      
       const data = await response.json();
-      return data.id;
+      console.log('API Response Data:', data);
+      
+      if (data.data && data.data.length > 0) {
+        return data.data[0].id;
+      }
+      
+      return null;
     } catch (error) {
       console.error('Failed to get user ID from username:', error);
       return null;
