@@ -7,103 +7,6 @@ import { NAV_ITEMS, EXTERNAL_LINKS } from "@/constants";
 import { cn } from "@/lib/utils";
 import { useSecretAccess } from "@/hooks/useSecretAccess";
 
-const SecretKeypad = ({ isOpen, onClose, onSuccess }: { isOpen: boolean; onClose: () => void; onSuccess: () => void }) => {
-  const [input, setInput] = useState("");
-  const keypadRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (isOpen && keypadRef.current) {
-      gsap.fromTo(keypadRef.current, 
-        { scale: 0.8, opacity: 0 },
-        { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(1.7)" }
-      );
-    }
-  }, [isOpen]);
-
-  const handleKeyPress = (value: string) => {
-    if (value === "CLEAR") {
-      setInput("");
-    } else if (value === "ENTER") {
-      if (input === "2025") {
-        onSuccess();
-        onClose();
-      } else {
-        gsap.to(keypadRef.current, {
-          x: "-=10",
-          duration: 0.075,
-          ease: "power2.inOut",
-          repeat: 4,
-          yoyo: true,
-          onComplete: () => setInput("")
-        });
-      }
-    } else if (input.length < 4) {
-      setInput(input + value);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center pt-20">
-      <div ref={keypadRef} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-red-500/30 shadow-2xl shadow-red-500/20 max-w-sm w-full mx-4">
-        <div className="text-center mb-6">
-          <h3 className="text-xl font-bold text-red-400 mb-2">ACCESS REQUIRED</h3>
-          <div className="flex justify-center gap-2 mb-4">
-            {[0, 1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="w-12 h-12 bg-gray-800 border border-gray-700 rounded-lg flex items-center justify-center"
-              >
-                <span className="text-xl font-mono text-red-400">
-                  {input[i] || "•"}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-3 gap-2 mb-4">
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((num) => (
-            <button
-              key={num}
-              onClick={() => handleKeyPress(num)}
-              className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 border border-gray-600"
-            >
-              {num}
-            </button>
-          ))}
-          <button
-            onClick={() => handleKeyPress("CLEAR")}
-            className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-orange-600 hover:to-orange-700 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 border border-gray-600 text-sm"
-          >
-            CLR
-          </button>
-          <button
-            onClick={() => handleKeyPress("0")}
-            className="w-16 h-16 bg-gradient-to-br from-gray-700 to-gray-800 hover:from-red-600 hover:to-red-700 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 border border-gray-600"
-          >
-            0
-          </button>
-          <button
-            onClick={() => handleKeyPress("ENTER")}
-            className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 hover:from-green-500 hover:to-green-600 text-white font-bold rounded-lg transition-all duration-200 transform hover:scale-105 border border-green-500"
-          >
-            ✓
-          </button>
-        </div>
-        
-        <button
-          onClick={onClose}
-          className="w-full py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
-        >
-          CANCEL
-        </button>
-      </div>
-    </div>
-  );
-};
-
 const CountdownTimer = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -167,6 +70,14 @@ export const Navbar = () => {
       }
     }
   };
+
+  // Auto-navigate when secret sequence is detected
+  useEffect(() => {
+    if (showKeypad) {
+      navigate("/2025");
+      setShowKeypad(false);
+    }
+  }, [showKeypad, navigate, setShowKeypad]);
 
   // Play / pause audio
   useEffect(() => {
@@ -286,12 +197,6 @@ export const Navbar = () => {
           </div>
         </div>
       </div>
-      
-      <SecretKeypad
-        isOpen={showKeypad}
-        onClose={() => setShowKeypad(false)}
-        onSuccess={() => navigate("/2025")}
-      />
     </header>
   );
 };
