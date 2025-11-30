@@ -1,9 +1,153 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Trophy, ChevronRight, Share2, Sparkles, TrendingUp, Award, Clock, Users, Target, Flame, Activity } from 'lucide-react';
+import { Trophy, ChevronRight, Share2, Sparkles, TrendingUp, Award, Clock, Users, Target, Flame, Activity, Gamepad2, Crown, Star as StarIcon } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
+
+// Roblox API service
+class RobloxAPI {
+  static async getGameStats() {
+    try {
+      // Mock data for now - replace with actual Roblox API calls
+      const mockData = {
+        visits: 45234,
+        playing: 127,
+        favorites: 8921,
+        rating: 4.8,
+        totalVotes: 3421
+      };
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return mockData;
+    } catch (error) {
+      console.error('Failed to fetch Roblox stats:', error);
+      return null;
+    }
+  }
+  
+  static async getPlayerStats() {
+    try {
+      // Mock player data - replace with actual API calls
+      const mockPlayerData = {
+        totalVisits: Math.floor(Math.random() * 1000) + 100,
+        playtime: Math.floor(Math.random() * 100) + 20,
+        achievements: Math.floor(Math.random() * 15) + 5,
+        friends: Math.floor(Math.random() * 200) + 50,
+        groupRank: 'Senior Fire Marshal',
+        joinedDate: new Date('2024-01-15'),
+        lastSeen: new Date(),
+        badges: Math.floor(Math.random() * 50) + 10,
+        avatarUrl: `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`
+      };
+      
+      await new Promise(resolve => setTimeout(resolve, 800));
+      return mockPlayerData;
+    } catch (error) {
+      console.error('Failed to fetch player stats:', error);
+      return null;
+    }
+  }
+}
+
+// Fun mini-game component
+const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(10);
+  const [isActive, setIsActive] = useState(false);
+  const [targetPosition, setTargetPosition] = useState({ x: 50, y: 50 });
+  
+  useEffect(() => {
+    if (isActive && timeLeft > 0) {
+      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
+      return () => clearTimeout(timer);
+    } else if (timeLeft === 0) {
+      setIsActive(false);
+      onComplete(score);
+    }
+  }, [isActive, timeLeft, onComplete]);
+  
+  const handleClick = () => {
+    if (isActive) {
+      setScore(score + 1);
+      setTargetPosition({
+        x: Math.random() * 80 + 10,
+        y: Math.random() * 80 + 10
+      });
+    }
+  };
+  
+  const startGame = () => {
+    setIsActive(true);
+    setScore(0);
+    setTimeLeft(10);
+  };
+  
+  return (
+    <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-8 text-center">
+      <h3 className="text-2xl font-bold text-white mb-4">🔥 Alarm Speed Challenge 🔥</h3>
+      <p className="text-[#A3A3A3] mb-6">Click the alarm as fast as you can!</p>
+      
+      {!isActive ? (
+        <button 
+          onClick={startGame}
+          className="px-6 py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-xl hover:scale-105 transition-transform"
+        >
+          {timeLeft === 0 ? 'Try Again' : 'Start Game'}
+        </button>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex justify-between text-white">
+            <span>Score: {score}</span>
+            <span>Time: {timeLeft}s</span>
+          </div>
+          
+          <div className="relative h-64 bg-[rgba(0,0,0,0.3)] rounded-xl overflow-hidden">
+            <div
+              className="absolute w-12 h-12 bg-gradient-to-r from-red-500 to-orange-500 rounded-full cursor-pointer hover:scale-110 transition-transform flex items-center justify-center text-white font-bold"
+              style={{
+                left: `${targetPosition.x}%`,
+                top: `${targetPosition.y}%`,
+                transform: 'translate(-50%, -50%)'
+              }}
+              onClick={handleClick}
+            >
+              🔥
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Achievement badge component
+const AchievementBadge = ({ icon, name, unlocked, rarity }: {
+  icon: string;
+  name: string;
+  unlocked: boolean;
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+}) => {
+  const rarityColors = {
+    common: 'from-gray-500 to-gray-600',
+    rare: 'from-blue-500 to-blue-600',
+    epic: 'from-purple-500 to-purple-600',
+    legendary: 'from-yellow-500 to-orange-500'
+  };
+  
+  return (
+    <div className={`relative group ${!unlocked && 'opacity-50'}`}>
+      <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${rarityColors[rarity]} flex items-center justify-center text-2xl transform transition-all duration-300 group-hover:scale-110 group-hover:rotate-6 cursor-pointer`}>
+        {icon}
+      </div>
+      <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+        {unlocked && <StarIcon className="w-4 h-4 text-white" />}
+      </div>
+      <p className="text-xs text-white mt-2 text-center font-medium">{name}</p>
+    </div>
+  );
+};
 
 // Performance monitoring hook
 const usePerformanceMonitor = () => {
@@ -86,17 +230,22 @@ const AdvancedStatCard = ({
   label, 
   description, 
   icon: Icon, 
-  delay = 0 
+  delay = 0,
+  trend,
+  funFact
 }: {
   value: string | number;
   label: string;
   description: string;
   icon: any;
   delay?: number;
+  trend?: 'up' | 'down' | 'neutral';
+  funFact?: string;
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [displayValue, setDisplayValue] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [showFunFact, setShowFunFact] = useState(false);
   
   useEffect(() => {
     if (!cardRef.current) return;
@@ -171,9 +320,10 @@ const AdvancedStatCard = ({
   return (
     <div 
       ref={cardRef}
-      className="group relative bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-8 text-center border border-[rgba(108,92,231,0.3)] hover:border-[#6C5CE7]/50 transition-all duration-300 overflow-hidden cursor-pointer"
+      className="group relative bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-6 text-center border border-[rgba(108,92,231,0.3)] hover:border-[#6C5CE7]/50 transition-all duration-300 overflow-hidden cursor-pointer"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      onClick={() => setShowFunFact(!showFunFact)}
     >
       {/* Animated background gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-[rgba(108,92,231,0.1)] opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -181,25 +331,41 @@ const AdvancedStatCard = ({
       {/* Glow effect */}
       <div className="absolute -inset-1 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] rounded-2xl opacity-0 group-hover:opacity-20 blur-xl transition-all duration-500" />
       
+      {/* Trend indicator */}
+      {trend && (
+        <div className="absolute top-2 right-2">
+          {trend === 'up' && <TrendingUp className="w-4 h-4 text-green-500" />}
+          {trend === 'down' && <TrendingUp className="w-4 h-4 text-red-500 rotate-180" />}
+        </div>
+      )}
+      
       {/* Icon with animation */}
-      <div className="relative mb-4">
-        <div className="w-16 h-16 mx-auto bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-2xl flex items-center justify-center">
-          <Icon className="w-8 h-8 text-white" />
+      <div className="relative mb-3">
+        <div className="w-12 h-12 mx-auto bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-xl flex items-center justify-center">
+          <Icon className="w-6 h-6 text-white" />
         </div>
         {isHovered && (
           <div className="absolute inset-0 flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-white animate-pulse" />
+            <Sparkles className="w-5 h-5 text-white animate-pulse" />
           </div>
         )}
       </div>
       
       {/* Animated value */}
-      <div className="text-5xl md:text-6xl font-black mb-2 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
+      <div className="text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
         {formattedValue}
       </div>
       
-      <div className="text-white font-bold text-lg mb-2">{label}</div>
-      <div className="text-[#A3A3A3] text-sm">{description}</div>
+      <div className="text-white font-bold text-sm mb-1">{label}</div>
+      <div className="text-[#A3A3A3] text-xs">{description}</div>
+      
+      {/* Fun fact tooltip */}
+      {funFact && showFunFact && (
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 p-3 bg-[#0E0E11] border border-[#6C5CE7]/50 rounded-lg text-xs text-white whitespace-nowrap z-10">
+          {funFact}
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 w-2 h-2 bg-[#0E0E11] border-r border-b border-[#6C5CE7]/50 transform rotate-45" />
+        </div>
+      )}
       
       {/* Floating particles on hover */}
       {isHovered && (
@@ -233,6 +399,7 @@ const AdvancedAchievementCard = ({
     color: string;
     progress?: number;
     unlocked?: boolean;
+    reward?: string;
   };
   index: number;
 }) => {
@@ -272,46 +439,53 @@ const AdvancedAchievementCard = ({
   return (
     <div 
       ref={cardRef}
-      className="group relative bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-8 border border-[rgba(108,92,231,0.3)] hover:border-[#6C5CE7]/50 transition-all duration-300 overflow-hidden"
+      className="group relative bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-6 border border-[rgba(108,92,231,0.3)] hover:border-[#6C5CE7]/50 transition-all duration-300 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[rgba(108,92,231,0.05)] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
-      <div className="flex items-center gap-6 relative z-10">
+      <div className="flex items-center gap-4 relative z-10">
         {/* Animated icon */}
         <div className="relative">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-2xl flex items-center justify-center text-3xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
+          <div className="w-14 h-14 bg-gradient-to-br from-[#6C5CE7] to-[#00E5FF] rounded-xl flex items-center justify-center text-2xl transform transition-transform duration-300 group-hover:scale-110 group-hover:rotate-12">
             {achievement.icon}
           </div>
           {achievement.unlocked && (
-            <div className="absolute -top-2 -right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
-              <Trophy className="w-4 h-4 text-white" />
+            <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+              <Trophy className="w-3 h-3 text-white" />
             </div>
           )}
         </div>
         
         <div className="flex-1">
-          <h3 className="text-2xl font-bold text-white mb-2 transform transition-transform duration-300 group-hover:translate-x-2">
+          <h3 className="text-lg font-bold text-white mb-1 transform transition-transform duration-300 group-hover:translate-x-2">
             {achievement.name}
           </h3>
-          <p className="text-[#A3A3A3] text-lg mb-4">{achievement.description}</p>
+          <p className="text-[#A3A3A3] text-sm mb-3">{achievement.description}</p>
           
           {/* Progress bar */}
           {achievement.progress !== undefined && (
-            <div className="w-full bg-[rgba(255,255,255,0.1)] rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-[rgba(255,255,255,0.1)] rounded-full h-2 overflow-hidden mb-2">
               <div 
                 className="h-full bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] rounded-full transition-all duration-1000 ease-out"
                 style={{ width: `${progress}%` }}
               />
             </div>
           )}
+          
+          {/* Reward */}
+          {achievement.reward && (
+            <div className="text-xs text-[#00E5FF] font-medium">
+              🎁 {achievement.reward}
+            </div>
+          )}
         </div>
         
         {/* Floating elements */}
         <div className="relative">
-          <Trophy className="w-8 h-8 text-[#6C5CE7] transform transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
+          <Trophy className="w-6 h-6 text-[#6C5CE7] transform transition-transform duration-300 group-hover:scale-125 group-hover:rotate-12" />
           {isHovered && (
             <div className="absolute -inset-2 bg-[#6C5CE7] rounded-full opacity-20 blur-xl animate-pulse" />
           )}
@@ -332,15 +506,51 @@ const WrapUp2025 = () => {
     alarmsPulled: 0,
     drillsCompleted: 0,
     timePlayed: 0,
-    achievements: 0
+    achievements: 0,
+    robloxVisits: 0,
+    robloxPlaying: 0,
+    robloxFavorites: 0,
+    robloxRating: 0
   });
   const [currentPage, setCurrentPage] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [gameData, setGameData] = useState<any>(null);
+  const [playerData, setPlayerData] = useState<any>(null);
+  const [miniGameScore, setMiniGameScore] = useState(0);
   
   const sectionRef = useRef<HTMLDivElement>(null);
   const statsRef = useRef<HTMLDivElement>(null);
   const achievementsRef = useRef<HTMLDivElement>(null);
+  
+  // Fetch Roblox data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const gameStats = await RobloxAPI.getGameStats();
+        if (gameStats) {
+          setGameData(gameStats);
+          setCounters(prev => ({
+            ...prev,
+            robloxVisits: gameStats.visits,
+            robloxPlaying: gameStats.playing,
+            robloxFavorites: gameStats.favorites,
+            robloxRating: gameStats.rating
+          }));
+        }
+        
+        // Mock player data for demo
+        const playerStats = await RobloxAPI.getPlayerStats();
+        if (playerStats) {
+          setPlayerData(playerStats);
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
   
   // Mouse tracking for parallax effects
   useEffect(() => {
@@ -429,7 +639,7 @@ const WrapUp2025 = () => {
           });
           
           // Start counters with stagger
-          animateCounter(50000, 'visits');
+          animateCounter(counters.robloxVisits || 45234, 'visits');
           setTimeout(() => animateCounter(1250, 'discord'), 200);
           setTimeout(() => animateCounter(1, 'ranking'), 400);
           setTimeout(() => animateCounter(2025, 'year'), 600);
@@ -437,6 +647,8 @@ const WrapUp2025 = () => {
           setTimeout(() => animateCounter(89, 'drillsCompleted'), 1000);
           setTimeout(() => animateCounter(42, 'timePlayed'), 1200);
           setTimeout(() => animateCounter(15, 'achievements'), 1400);
+          setTimeout(() => animateCounter(counters.robloxPlaying || 127, 'robloxPlaying'), 1600);
+          setTimeout(() => animateCounter(counters.robloxFavorites || 8921, 'robloxFavorites'), 1800);
         }
       });
       
@@ -459,7 +671,7 @@ const WrapUp2025 = () => {
     }, sectionRef);
 
     return () => ctx.revert();
-  }, [animateCounter]);
+  }, [animateCounter, counters.robloxVisits, counters.robloxPlaying, counters.robloxFavorites]);
   
   // Memoized pages for performance
   const pages = useMemo(() => [
@@ -469,12 +681,12 @@ const WrapUp2025 = () => {
       
       <div className="text-center max-w-4xl mx-auto relative z-20">
         <div className="mb-16">
-          <h1 className="hero-title text-6xl md:text-9xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
+          <h1 className="hero-title text-5xl md:text-8xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
             2025 WRAPPED
           </h1>
           
           <div className="relative inline-block">
-            <p className="hero-subtitle text-2xl md:text-4xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
+            <p className="hero-subtitle text-xl md:text-3xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
               Your year in Atlanta High Fire Alarm Simulation
             </p>
             <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-20 blur-xl -z-10" />
@@ -501,77 +713,117 @@ const WrapUp2025 = () => {
       </div>
     </div>,
 
-    // Page 2: Enhanced Stats with real-time animations
+    // Page 2: Enhanced Stats with Roblox API data
     <div className="min-h-screen flex items-center justify-center px-6 relative">
       <ParticleSystem count={20} />
       
       <div className="max-w-7xl mx-auto w-full relative z-20">
-        <h2 className="text-5xl md:text-7xl font-bold text-center mb-20 text-white floating">
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 text-white floating">
           <span className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
             YOUR 2025 STATS
           </span>
         </h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <AdvancedStatCard
-            value={counters.visits}
-            label="ALARMS PULLED"
-            description="Massive dedication"
-            icon={Flame}
-            delay={0}
-          />
-          
-          <AdvancedStatCard
-            value={counters.discord}
-            label="DRILLS COMPLETED"
-            description="Expert training"
-            icon={Target}
-            delay={0.2}
-          />
-          
-          <AdvancedStatCard
-            value={`${counters.timePlayed}h`}
-            label="TIME PLAYED"
-            description="True commitment"
-            icon={Clock}
-            delay={0.4}
-          />
-          
-          <AdvancedStatCard
-            value={counters.achievements}
-            label="ACHIEVEMENTS"
-            description="Elite status"
-            icon={Award}
-            delay={0.6}
-          />
+        {/* Roblox Game Stats */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <Gamepad2 className="w-6 h-6 text-[#00E5FF]" />
+            Roblox Game Stats
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AdvancedStatCard
+              value={counters.robloxVisits}
+              label="TOTAL VISITS"
+              description="Players who joined"
+              icon={Users}
+              delay={0}
+              trend="up"
+              funFact="That's like filling a stadium 450 times!"
+            />
+            
+            <AdvancedStatCard
+              value={counters.robloxPlaying}
+              label="PLAYING NOW"
+              description="Currently online"
+              icon={Activity}
+              delay={0.2}
+              trend="neutral"
+              funFact="Peak hours: 3-5 PM EST"
+            />
+            
+            <AdvancedStatCard
+              value={counters.robloxFavorites}
+              label="FAVORITES"
+              description="Players who love it"
+              icon={StarIcon}
+              delay={0.4}
+              trend="up"
+              funFact="97% positive rating!"
+            />
+            
+            <AdvancedStatCard
+              value={counters.robloxRating}
+              label="RATING"
+              description="Community score"
+              icon={Trophy}
+              delay={0.6}
+              trend="up"
+              funFact="Top 1% in simulation games!"
+            />
+          </div>
         </div>
         
-        {/* Additional stats row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <AdvancedStatCard
-            value={counters.alarmsPulled}
-            label="TOTAL VISITS"
-            description="Community growth"
-            icon={Users}
-            delay={0.8}
-          />
-          
-          <AdvancedStatCard
-            value={counters.drillsCompleted}
-            label="SUCCESS RATE"
-            description="Perfect execution"
-            icon={TrendingUp}
-            delay={1.0}
-          />
-          
-          <AdvancedStatCard
-            value="98%"
-            label="ACCURACY"
-            description="Precision skills"
-            icon={Target}
-            delay={1.2}
-          />
+        {/* Personal Stats */}
+        <div className="mb-12">
+          <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <Crown className="w-6 h-6 text-[#6C5CE7]" />
+            Your Personal Stats
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <AdvancedStatCard
+              value={counters.alarmsPulled}
+              label="ALARMS PULLED"
+              description="Massive dedication"
+              icon={Flame}
+              delay={0.8}
+              trend="up"
+              funFact="You're in the top 5%!"
+            />
+            
+            <AdvancedStatCard
+              value={counters.drillsCompleted}
+              label="DRILLS COMPLETED"
+              description="Expert training"
+              icon={Target}
+              delay={1.0}
+              trend="up"
+              funFact="Perfect score 23 times!"
+            />
+            
+            <AdvancedStatCard
+              value={`${counters.timePlayed}h`}
+              label="TIME PLAYED"
+              description="True commitment"
+              icon={Clock}
+              delay={1.2}
+              trend="up"
+              funFact="That's 2 full days!"
+            />
+            
+            <AdvancedStatCard
+              value={counters.achievements}
+              label="ACHIEVEMENTS"
+              description="Elite status"
+              icon={Award}
+              delay={1.4}
+              trend="up"
+              funFact="3 legendary unlocks!"
+            />
+          </div>
         </div>
+        
+        {/* Fun Mini Game */}
+        <MiniGame onComplete={(score) => setMiniGameScore(score)} />
       </div>
     </div>,
 
@@ -580,13 +832,28 @@ const WrapUp2025 = () => {
       <ParticleSystem count={25} />
       
       <div className="max-w-5xl mx-auto w-full relative z-20">
-        <h2 className="text-5xl md:text-7xl font-bold text-center mb-20 text-white floating">
+        <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 text-white floating">
           <span className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
-            TOP ACHIEVEMENTS
+            ACHIEVEMENT COLLECTION
           </span>
         </h2>
         
-        <div className="space-y-6">
+        {/* Achievement Badges Grid */}
+        <div className="mb-12">
+          <h3 className="text-xl font-bold text-white mb-6">Your Badge Collection</h3>
+          <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-12">
+            <AchievementBadge icon="🔥" name="Fire Starter" unlocked rarity="common" />
+            <AchievementBadge icon="🚨" name="Alert Pro" unlocked rarity="rare" />
+            <AchievementBadge icon="⚡" name="Speed Demon" unlocked rarity="epic" />
+            <AchievementBadge icon="🌟" name="Superstar" unlocked={false} rarity="legendary" />
+            <AchievementBadge icon="💎" name="Diamond" unlocked rarity="epic" />
+            <AchievementBadge icon="🏆" name="Champion" unlocked rarity="rare" />
+            <AchievementBadge icon="👑" name="Royalty" unlocked={false} rarity="legendary" />
+            <AchievementBadge icon="🎯" name="Perfect" unlocked rarity="common" />
+          </div>
+        </div>
+        
+        <div className="space-y-4">
           {[
             {
               name: "Master Alarm Puller",
@@ -594,7 +861,8 @@ const WrapUp2025 = () => {
               icon: "🔥",
               color: "#6C5CE7",
               progress: 100,
-              unlocked: true
+              unlocked: true,
+              reward: "Exclusive Fire Master Badge"
             },
             {
               name: "Drill Expert",
@@ -602,7 +870,8 @@ const WrapUp2025 = () => {
               icon: "🚨",
               color: "#00E5FF",
               progress: 89,
-              unlocked: true
+              unlocked: true,
+              reward: "500 Robux"
             },
             {
               name: "Speed Demon",
@@ -610,7 +879,8 @@ const WrapUp2025 = () => {
               icon: "⚡",
               color: "#FF6B6B",
               progress: 100,
-              unlocked: true
+              unlocked: true,
+              reward: "Speed Demon Title"
             },
             {
               name: "Community Hero",
@@ -618,7 +888,8 @@ const WrapUp2025 = () => {
               icon: "🌟",
               color: "#2ED573",
               progress: 75,
-              unlocked: false
+              unlocked: false,
+              reward: "Hero Badge + 200 Robux"
             },
             {
               name: "Perfect Record",
@@ -626,7 +897,8 @@ const WrapUp2025 = () => {
               icon: "💎",
               color: "#6C5CE7",
               progress: 95,
-              unlocked: false
+              unlocked: false,
+              reward: "Perfectionist Badge"
             },
             {
               name: "Night Owl",
@@ -634,7 +906,26 @@ const WrapUp2025 = () => {
               icon: "🦉",
               color: "#00E5FF",
               progress: 60,
-              unlocked: false
+              unlocked: false,
+              reward: "Night Owl Title"
+            },
+            {
+              name: "Veteran Player",
+              description: "Played for over 100 hours",
+              icon: "🎖️",
+              color: "#FF6B6B",
+              progress: 42,
+              unlocked: false,
+              reward: "Veteran Status"
+            },
+            {
+              name: "Social Butterfly",
+              description: "Made 50+ friends in-game",
+              icon: "🦋",
+              color: "#2ED573",
+              progress: 88,
+              unlocked: true,
+              reward: "Friend Master Badge"
             }
           ].map((achievement, i) => (
             <AdvancedAchievementCard
@@ -657,12 +948,12 @@ const WrapUp2025 = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#6C5CE7]/10 to-[#00E5FF]/10 opacity-50" />
           
           <div className="text-center mb-12 relative z-10">
-            <h2 className="text-5xl md:text-7xl font-bold mb-8 bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
+            <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
               THANK YOU!
             </h2>
             
             <div className="relative inline-block mb-8">
-              <p className="text-xl text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
+              <p className="text-lg text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
                 For being part of our amazing community in 2025. Your dedication makes Atlanta High the #1 fire alarm simulation game!
               </p>
               <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-10 blur-xl -z-10" />
@@ -671,22 +962,31 @@ const WrapUp2025 = () => {
             {/* Stats summary */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
               <div className="text-center">
-                <div className="text-3xl font-black text-[#6C5CE7] mb-1">{counters.visits.toLocaleString()}</div>
-                <div className="text-sm text-[#A3A3A3]">Total Actions</div>
+                <div className="text-2xl font-black text-[#6C5CE7] mb-1">{counters.robloxVisits.toLocaleString()}</div>
+                <div className="text-xs text-[#A3A3A3]">Total Visits</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-black text-[#00E5FF] mb-1">{counters.discord.toLocaleString()}</div>
-                <div className="text-sm text-[#A3A3A3]">Community Members</div>
+                <div className="text-2xl font-black text-[#00E5FF] mb-1">{counters.robloxFavorites.toLocaleString()}</div>
+                <div className="text-xs text-[#A3A3A3]">Favorites</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-black text-[#FF6B6B] mb-1">{counters.timePlayed}h</div>
-                <div className="text-sm text-[#A3A3A3]">Hours Played</div>
+                <div className="text-2xl font-black text-[#FF6B6B] mb-1">{counters.timePlayed}h</div>
+                <div className="text-xs text-[#A3A3A3]">Hours Played</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-black text-[#2ED573] mb-1">{counters.achievements}</div>
-                <div className="text-sm text-[#A3A3A3]">Achievements</div>
+                <div className="text-2xl font-black text-[#2ED573] mb-1">{counters.achievements}</div>
+                <div className="text-xs text-[#A3A3A3]">Achievements</div>
               </div>
             </div>
+            
+            {/* Mini game score */}
+            {miniGameScore > 0 && (
+              <div className="mb-8 p-4 bg-[rgba(108,92,231,0.1)] rounded-xl">
+                <p className="text-[#00E5FF] font-bold">
+                  🎮 Mini Game High Score: {miniGameScore} clicks!
+                </p>
+              </div>
+            )}
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative z-10">
@@ -717,7 +1017,7 @@ const WrapUp2025 = () => {
         </div>
       </div>
     </div>
-  ], [counters, currentPage, animateCounter]);
+  ], [counters, currentPage, animateCounter, gameData, playerData, miniGameScore]);
   
   // Keyboard navigation
   useEffect(() => {
