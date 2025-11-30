@@ -46,7 +46,7 @@ const SecretKeypad = ({ isOpen, onClose, onSuccess }: { isOpen: boolean; onClose
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center">
-      <div ref={keypadRef} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-red-500/30 shadow-2xl shadow-red-500/20">
+      <div ref={keypadRef} className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl p-6 border border-red-500/30 shadow-2xl shadow-red-500/20 max-w-sm w-full mx-4">
         <div className="text-center mb-6">
           <h3 className="text-xl font-bold text-red-400 mb-2">ACCESS REQUIRED</h3>
           <div className="flex justify-center gap-2 mb-4">
