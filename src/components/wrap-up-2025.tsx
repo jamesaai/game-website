@@ -179,45 +179,53 @@ const usePerformanceMonitor = () => {
   }, []);
 };
 
-// Particle system component
-const ParticleSystem = ({ count = 50 }: { count?: number }) => {
+// Particle system component - optimized
+const ParticleSystem = ({ count = 20 }: { count?: number }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const particlesRef = useRef<HTMLDivElement[]>([]);
   
   useEffect(() => {
     if (!containerRef.current) return;
     
-    const particles = Array.from({ length: count }, () => {
+    // Clear existing particles
+    particlesRef.current.forEach(particle => particle.remove());
+    particlesRef.current = [];
+    
+    Array.from({ length: count }, () => {
       const particle = document.createElement('div');
       particle.className = 'particle';
       particle.style.cssText = `
         position: absolute;
-        width: ${Math.random() * 4 + 1}px;
-        height: ${Math.random() * 4 + 1}px;
+        width: ${Math.random() * 3 + 1}px;
+        height: ${Math.random() * 3 + 1}px;
         background: linear-gradient(135deg, #6C5CE7, #00E5FF);
         border-radius: 50%;
         pointer-events: none;
-        opacity: ${Math.random() * 0.5 + 0.3};
+        opacity: ${Math.random() * 0.3 + 0.2};
         left: ${Math.random() * 100}%;
         top: ${Math.random() * 100}%;
+        will-change: transform, opacity;
       `;
       containerRef.current!.appendChild(particle);
+      particlesRef.current.push(particle);
       
-      // Animate particle
+      // Simplified animation
       gsap.to(particle, {
-        x: (Math.random() - 0.5) * 200,
-        y: (Math.random() - 0.5) * 200,
+        x: (Math.random() - 0.5) * 100,
+        y: (Math.random() - 0.5) * 100,
         opacity: 0,
-        duration: Math.random() * 3 + 2,
+        duration: Math.random() * 2 + 1,
         repeat: -1,
-        delay: Math.random() * 2,
-        ease: 'power2.out'
+        delay: Math.random() * 1,
+        ease: 'power1.out'
       });
       
       return particle;
     });
     
     return () => {
-      particles.forEach(particle => particle.remove());
+      particlesRef.current.forEach(particle => particle.remove());
+      particlesRef.current = [];
     };
   }, [count]);
   
@@ -552,14 +560,21 @@ const WrapUp2025 = () => {
     fetchData();
   }, []);
   
-  // Mouse tracking for parallax effects
+  // Mouse tracking for parallax effects - throttled
   useEffect(() => {
+    let timeoutId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      clearTimeout(timeoutId);
+      timeoutId = window.setTimeout(() => {
+        setMousePosition({ x: e.clientX, y: e.clientY });
+      }, 16); // ~60fps throttle
     };
     
     window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      clearTimeout(timeoutId);
+    };
   }, []);
   
   // Loading animation
@@ -676,8 +691,8 @@ const WrapUp2025 = () => {
   // Memoized pages for performance
   const pages = useMemo(() => [
     // Page 1: Welcome with enhanced effects
-    <div className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={30} />
+    <div key="page-1" className="min-h-screen flex items-center justify-center px-6 relative">
+      <ParticleSystem count={20} />
       
       <div className="text-center max-w-4xl mx-auto relative z-20">
         <div className="mb-16">
@@ -714,8 +729,8 @@ const WrapUp2025 = () => {
     </div>,
 
     // Page 2: Enhanced Stats with Roblox API data
-    <div className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={20} />
+    <div key="page-2" className="min-h-screen flex items-center justify-center px-6 relative">
+      <ParticleSystem count={15} />
       
       <div className="max-w-7xl mx-auto w-full relative z-20">
         <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 text-white floating">
@@ -828,8 +843,8 @@ const WrapUp2025 = () => {
     </div>,
 
     // Page 3: Enhanced Achievements with progress tracking
-    <div className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={25} />
+    <div key="page-3" className="min-h-screen flex items-center justify-center px-6 relative">
+      <ParticleSystem count={15} />
       
       <div className="max-w-5xl mx-auto w-full relative z-20">
         <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 text-white floating">
@@ -939,8 +954,8 @@ const WrapUp2025 = () => {
     </div>,
 
     // Page 4: Enhanced Thank You with social sharing
-    <div className="min-h-screen flex items-center justify-center px-6 relative">
-      <ParticleSystem count={40} />
+    <div key="page-4" className="min-h-screen flex items-center justify-center px-6 relative">
+      <ParticleSystem count={20} />
       
       <div className="max-w-4xl mx-auto w-full relative z-20">
         <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-3xl p-16 border border-[rgba(108,92,231,0.3)] hover:border-[#6C5CE7]/50 transition-all duration-300 relative overflow-hidden">
@@ -1035,9 +1050,9 @@ const WrapUp2025 = () => {
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [pages.length]);
   
-  // Parallax effect based on mouse position
+  // Parallax effect based on mouse position - throttled
   const parallaxStyle = useMemo(() => ({
-    transform: `translate(${mousePosition.x * 0.01}px, ${mousePosition.y * 0.01}px)`
+    transform: `translate(${Math.round(mousePosition.x * 0.005)}px, ${Math.round(mousePosition.y * 0.005)}px)`
   }), [mousePosition]);
   
   if (!isLoaded) {
