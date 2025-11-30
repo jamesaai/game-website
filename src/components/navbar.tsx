@@ -1,6 +1,6 @@
 import gsap from "gsap";
 import { useEffect, useRef, useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useWindowScroll } from "react-use";
 
 import { NAV_ITEMS, EXTERNAL_LINKS } from "@/constants";
@@ -47,11 +47,13 @@ const CountdownTimer = () => {
 export const Navbar = () => {
   const navContainerRef = useRef<HTMLDivElement>(null);
   const audioElementRef = useRef<HTMLAudioElement>(null);
+  const navigate = useNavigate();
 
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const [isIndicatorActive, setIsIndicatorActive] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
   const [isNavVisible, setIsNavVisible] = useState(false);
+  const [secretInput, setSecretInput] = useState("");
 
   const { y: currentScrollY } = useWindowScroll();
 
@@ -65,6 +67,16 @@ export const Navbar = () => {
       } else {
         audioElementRef.current.play();
       }
+    }
+  };
+
+  const handleSecretInput = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const value = e.currentTarget.value;
+    setSecretInput(value);
+    
+    if (value === "2025") {
+      navigate("/2025");
+      setSecretInput("");
     }
   };
 
@@ -135,6 +147,17 @@ export const Navbar = () => {
           {/* Right side - Actions */}
           <div className="flex items-center gap-2 sm:gap-3">
             <CountdownTimer />
+            
+            {/* Secret Input */}
+            <input
+              type="text"
+              value={secretInput}
+              onChange={(e) => setSecretInput(e.target.value)}
+              onKeyDown={handleSecretInput}
+              placeholder="🔒"
+              className="w-12 sm:w-16 px-2 py-1 text-xs bg-gray-800/50 border border-gray-700/50 rounded text-center focus:outline-none focus:border-red-500/50 transition-colors"
+              title="Enter secret code"
+            />
             
             <button
               onClick={toggleAudioIndicator}
