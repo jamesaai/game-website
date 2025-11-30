@@ -87,7 +87,7 @@ const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
   return (
     <div className="bg-[rgba(255,255,255,0.05)] backdrop-blur-xl rounded-2xl p-8 text-center">
       <h3 className="text-2xl font-bold text-white mb-4">🔥 Alarm Speed Challenge 🔥</h3>
-      <p className="text-[#A3A3A3] mb-6">Click the alarm as fast as you can!</p>
+      <p className="text-[#A3A3A3] mb-6 text-sm">Click the alarm as fast as you can!</p>
       
       {!isActive ? (
         <button 
@@ -98,7 +98,7 @@ const MiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
         </button>
       ) : (
         <div className="space-y-4">
-          <div className="flex justify-between text-white">
+          <div className="flex justify-between text-white text-sm">
             <span>Score: {score}</span>
             <span>Time: {timeLeft}s</span>
           </div>
@@ -360,7 +360,7 @@ const AdvancedStatCard = ({
       </div>
       
       {/* Animated value */}
-      <div className="text-4xl md:text-5xl font-black mb-2 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
+      <div className="text-3xl md:text-4xl font-black mb-2 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
         {formattedValue}
       </div>
       
@@ -696,12 +696,12 @@ const WrapUp2025 = () => {
       
       <div className="text-center max-w-4xl mx-auto relative z-20">
         <div className="mb-16">
-          <h1 className="hero-title text-5xl md:text-8xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
+          <h1 className="hero-title text-3xl md:text-5xl lg:text-6xl font-black mb-8 leading-none bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
             2025 WRAPPED
           </h1>
           
           <div className="relative inline-block">
-            <p className="hero-subtitle text-xl md:text-3xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
+            <p className="hero-subtitle text-lg md:text-xl lg:text-2xl text-[#A3A3A3] font-light max-w-2xl mx-auto leading-relaxed floating">
               Your year in Atlanta High Fire Alarm Simulation
             </p>
             <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-20 blur-xl -z-10" />
@@ -733,7 +733,7 @@ const WrapUp2025 = () => {
       <ParticleSystem count={15} />
       
       <div className="max-w-7xl mx-auto w-full relative z-20">
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 text-white floating">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-12 text-white floating">
           <span className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
             YOUR 2025 STATS
           </span>
@@ -741,7 +741,7 @@ const WrapUp2025 = () => {
         
         {/* Roblox Game Stats */}
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Gamepad2 className="w-6 h-6 text-[#00E5FF]" />
             Roblox Game Stats
           </h3>
@@ -790,7 +790,7 @@ const WrapUp2025 = () => {
         
         {/* Personal Stats */}
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+          <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-6 flex items-center gap-2">
             <Crown className="w-6 h-6 text-[#6C5CE7]" />
             Your Personal Stats
           </h3>
@@ -847,7 +847,7 @@ const WrapUp2025 = () => {
       <ParticleSystem count={15} />
       
       <div className="max-w-5xl mx-auto w-full relative z-20">
-        <h2 className="text-4xl md:text-6xl font-bold text-center mb-16 text-white floating">
+        <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center mb-12 text-white floating">
           <span className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
             ACHIEVEMENT COLLECTION
           </span>
@@ -855,7 +855,7 @@ const WrapUp2025 = () => {
         
         {/* Achievement Badges Grid */}
         <div className="mb-12">
-          <h3 className="text-xl font-bold text-white mb-6">Your Badge Collection</h3>
+          <h3 className="text-base md:text-lg lg:text-xl font-bold text-white mb-6">Your Badge Collection</h3>
           <div className="grid grid-cols-4 md:grid-cols-8 gap-4 mb-12">
             <AchievementBadge icon="🔥" name="Fire Starter" unlocked rarity="common" />
             <AchievementBadge icon="🚨" name="Alert Pro" unlocked rarity="rare" />
@@ -963,12 +963,12 @@ const WrapUp2025 = () => {
           <div className="absolute inset-0 bg-gradient-to-br from-[#6C5CE7]/10 to-[#00E5FF]/10 opacity-50" />
           
           <div className="text-center mb-12 relative z-10">
-            <h2 className="text-4xl md:text-6xl font-bold mb-8 bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-6 bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-[#6C5CE7] bg-clip-text text-transparent bg-size-200 animate-gradient">
               THANK YOU!
             </h2>
             
             <div className="relative inline-block mb-8">
-              <p className="text-lg text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-[#A3A3A3] leading-relaxed max-w-2xl mx-auto">
                 For being part of our amazing community in 2025. Your dedication makes Atlanta High the #1 fire alarm simulation game!
               </p>
               <div className="absolute inset-0 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] opacity-10 blur-xl -z-10" />
