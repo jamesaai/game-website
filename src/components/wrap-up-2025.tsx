@@ -50,14 +50,48 @@ const ParticleSystem = ({ count = 50, className = '' }: { count?: number; classN
   );
 };
 
-// Advanced stat card with hover effects and animations
-const AdvancedStatCard = ({ 
+// Enhanced loading spinner component
+const LoadingSpinner = ({ message = 'Loading...' }: { message?: string }) => (
+  <div className="flex flex-col items-center justify-center p-8">
+    <div className="relative w-16 h-16 mb-4">
+      <div className="absolute inset-0 border-4 border-[#6C5CE7]/20 rounded-full"></div>
+      <div className="absolute inset-0 border-4 border-[#6C5CE7] border-t-transparent rounded-full animate-spin"></div>
+      <div className="absolute inset-2 border-4 border-[#00E5FF]/20 rounded-full"></div>
+      <div className="absolute inset-2 border-4 border-[#00E5FF] border-t-transparent rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+    </div>
+    <p className="text-white text-lg font-medium animate-pulse">{message}</p>
+    <p className="text-[#A3A3A3] text-sm mt-2">Fetching your Roblox data...</p>
+  </div>
+);
+
+// API Status indicator
+const APIStatusIndicator = ({ status }: { status: 'loading' | 'success' | 'error' | 'partial' }) => {
+  const statusConfig = {
+    loading: { color: 'text-yellow-400', icon: '⏳', text: 'Connecting to Roblox API...' },
+    success: { color: 'text-green-400', icon: '✅', text: 'API Connected' },
+    error: { color: 'text-red-400', icon: '❌', text: 'API Unavailable' },
+    partial: { color: 'text-orange-400', icon: '⚠️', text: 'Limited API Access' }
+  };
+  
+  const config = statusConfig[status];
+  
+  return (
+    <div className={`flex items-center gap-2 text-sm ${config.color} bg-[rgba(0,0,0,0.3)] px-3 py-1 rounded-full`}>
+      <span className="text-lg">{config.icon}</span>
+      <span>{config.text}</span>
+    </div>
+  );
+};
+
+// Enhanced stat card with shimmer loading effect
+const EnhancedStatCard = ({ 
   value, 
   label, 
   icon: Icon, 
   delay = 0, 
   trend, 
-  color = '#6C5CE7' 
+  color = '#6C5CE7',
+  isLoading = false 
 }: {
   value: string | number;
   label: string;
@@ -65,6 +99,7 @@ const AdvancedStatCard = ({
   delay?: number;
   trend?: 'up' | 'down' | 'neutral';
   color?: string;
+  isLoading?: boolean;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [displayValue, setDisplayValue] = useState(0);
@@ -76,7 +111,7 @@ const AdvancedStatCard = ({
   }, [delay]);
   
   useEffect(() => {
-    if (isVisible && typeof value === 'number') {
+    if (isVisible && !isLoading && typeof value === 'number') {
       const duration = 2000;
       const startTime = performance.now();
       const targetValue = value;
@@ -97,14 +132,31 @@ const AdvancedStatCard = ({
       };
       
       requestAnimationFrame(animateCounter);
-    } else if (isVisible && typeof value === 'string') {
+    } else if (isVisible && !isLoading && typeof value === 'string') {
       setDisplayValue(value as any);
     }
-  }, [isVisible, value]);
+  }, [isVisible, value, isLoading]);
+  
+  if (isLoading) {
+    return (
+      <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20 overflow-hidden">
+        <div className="animate-pulse">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="w-10 h-10 rounded-lg bg-gray-700"></div>
+            <div className="flex-1">
+              <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-700 rounded w-1/2"></div>
+            </div>
+          </div>
+          <div className="h-8 bg-gray-700 rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div 
-      className={`bg-[#1a1a1f] rounded-xl p-6 border transition-all duration-300 transform cursor-pointer ${
+      className={`bg-[#1a1a1f] rounded-xl p-6 border transition-all duration-500 transform cursor-pointer ${
         isVisible ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
       } ${
         isHovered 
@@ -141,19 +193,25 @@ const AdvancedStatCard = ({
   );
 };
 
-// Advanced achievement badge with rarity and progress
-const AdvancedAchievementBadge = ({ 
+// Enhanced achievement badge with company-style rankings
+const CompanyAchievementBadge = ({ 
   icon, 
   name, 
+  description,
   unlocked, 
   rarity = 'common', 
-  progress = 100 
+  progress = 100,
+  rank = null,
+  metric = null
 }: {
   icon: string;
   name: string;
+  description?: string;
   unlocked: boolean;
   rarity?: 'common' | 'rare' | 'epic' | 'legendary';
   progress?: number;
+  rank?: number | null;
+  metric?: string | null;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   
@@ -180,18 +238,31 @@ const AdvancedAchievementBadge = ({
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className={`relative mb-2`}>
-        <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl bg-gradient-to-br ${rarityColors[rarity]} border-2 ${rarityBorders[rarity]} shadow-lg`}>
+        <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br ${rarityColors[rarity]} border-2 ${rarityBorders[rarity]} shadow-lg`}>
           {unlocked ? icon : '🔒'}
         </div>
         {unlocked && (
-          <div className="absolute -top-1 -right-1">
-            <Sparkles className="w-3 h-3 text-yellow-400" />
-          </div>
+          <>
+            <div className="absolute -top-1 -right-1">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+            </div>
+            {rank && (
+              <div className="absolute -top-2 -left-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+                #{rank}
+              </div>
+            )}
+          </>
         )}
       </div>
-      <div className="text-sm font-medium text-white">{name}</div>
+      <div className="text-sm font-bold text-white mb-1">{name}</div>
+      {description && (
+        <div className="text-xs text-[#A3A3A3] mb-2">{description}</div>
+      )}
+      {metric && unlocked && (
+        <div className="text-xs font-semibold text-[#6C5CE7]">{metric}</div>
+      )}
       {progress < 100 && (
-        <div className="mt-1 w-full bg-gray-700 rounded-full h-1">
+        <div className="mt-2 w-full bg-gray-700 rounded-full h-1">
           <div 
             className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] h-1 rounded-full transition-all duration-500"
             style={{ width: `${progress}%` }}
@@ -205,35 +276,59 @@ const AdvancedAchievementBadge = ({
 // Username input component
 const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) => void; isLoading: boolean }) => {
   const [inputValue, setInputValue] = useState('');
+  const [isValid, setIsValid] = useState(true);
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (inputValue.trim()) {
+      setIsValid(true);
       onSubmit(inputValue.trim());
+    } else {
+      setIsValid(false);
     }
   };
   
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
-      <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20">
+      <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20 backdrop-blur-xl">
         <h2 className="text-2xl font-bold text-white mb-4 text-center">Enter Your Roblox Username</h2>
-        <div className="space-y-4">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Roblox username..."
-            className="w-full px-4 py-3 bg-[#2a2a2f] border border-[#6C5CE7]/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#6C5CE7] transition-colors"
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            disabled={isLoading || !inputValue.trim()}
-            className="w-full py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? 'Loading...' : 'View My 2025 Wrapped'}
-          </button>
-        </div>
+        
+        {isLoading ? (
+          <LoadingSpinner message="Finding your profile..." />
+        ) : (
+          <div className="space-y-4">
+            <div className="relative">
+              <input
+                type="text"
+                value={inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setIsValid(true);
+                }}
+                placeholder="Roblox username..."
+                className={`w-full px-4 py-3 bg-[#2a2a2f] border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#6C5CE7] transition-colors ${
+                  !isValid ? 'border-red-500' : 'border-[#6C5CE7]/30'
+                }`}
+                disabled={isLoading}
+              />
+              {!isValid && (
+                <p className="text-red-400 text-sm mt-1">Please enter a valid username</p>
+              )}
+            </div>
+            
+            <button
+              type="submit"
+              disabled={isLoading || !inputValue.trim()}
+              className="w-full py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-lg hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:scale-100"
+            >
+              {isLoading ? 'Loading...' : 'View My 2025 Wrapped'}
+            </button>
+            
+            <div className="text-center">
+              <APIStatusIndicator status="loading" />
+            </div>
+          </div>
+        )}
       </div>
     </form>
   );
@@ -264,7 +359,7 @@ const SimpleMiniGame = ({ score, onScoreChange }: {
   );
 };
 
-// Roblox API service
+// Roblox API service with enhanced CORS handling
 class RobloxAPI {
   private static readonly USERS_URL = 'https://users.roblox.com/v1/users';
   private static readonly FRIENDS_URL = 'https://friends.roblox.com/v1/users';
@@ -273,274 +368,269 @@ class RobloxAPI {
   private static readonly GAMES_URL = 'https://games.roblox.com/v1/games';
   private static readonly GROUP_ID = 35390256;
   
+  // Enhanced proxy list with working alternatives
+  private static readonly PROXIES = [
+    {
+      url: 'https://api.codetabs.io/v1/proxy?quest=',
+      type: 'query'
+    },
+    {
+      url: 'https://corsproxy.io/?',
+      type: 'direct'
+    },
+    {
+      url: 'https://api.allorigins.win/raw?url=',
+      type: 'direct'
+    },
+    {
+      url: 'https://thingproxy.freeboard.io/fetch/',
+      type: 'direct'
+    },
+    {
+      url: 'https://cors-anywhere.herokuapp.com/',
+      type: 'direct'
+    }
+  ];
+  
+  // Helper method to try different proxy configurations
+  private static async tryProxyRequest(url: string, options: RequestInit = {}, proxyIndex = 0): Promise<Response | null> {
+    if (proxyIndex >= this.PROXIES.length) return null;
+    
+    const proxy = this.PROXIES[proxyIndex];
+    const proxyUrl = proxy.type === 'query' 
+      ? `${proxy.url}${encodeURIComponent(url)}`
+      : `${proxy.url}${url}`;
+    
+    try {
+      console.log(`Trying proxy ${proxyIndex + 1}/${this.PROXIES.length}: ${proxy.url}`);
+      
+      const response = await fetch(proxyUrl, {
+        ...options,
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest',
+          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+          ...options.headers
+        }
+      });
+      
+      if (response.ok) {
+        console.log(`Proxy ${proxyIndex + 1} successful`);
+        return response;
+      } else {
+        console.log(`Proxy ${proxyIndex + 1} failed with status: ${response.status}`);
+        return this.tryProxyRequest(url, options, proxyIndex + 1);
+      }
+    } catch (error) {
+      console.log(`Proxy ${proxyIndex + 1} error:`, error);
+      return this.tryProxyRequest(url, options, proxyIndex + 1);
+    }
+  }
+  
   static async getUserIdFromUsername(username: string) {
     try {
-      const proxies = [
-        'https://cors-anywhere.herokuapp.com/',
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
-      ];
-      
       const apiUrl = `${this.USERS_URL}/usernames/users`;
+      const requestBody = JSON.stringify({
+        usernames: [username],
+        excludeBannedUsers: false
+      });
       
-      for (const proxy of proxies) {
-        try {
-          const response = await fetch(proxy + apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'
-            },
-            body: JSON.stringify({
-              usernames: [username],
-              excludeBannedUsers: false
-            })
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data.data && data.data.length > 0) {
-              return data.data[0].id;
-            }
-          }
-        } catch (proxyError) {
-          continue;
+      const response = await this.tryProxyRequest(apiUrl, {
+        method: 'POST',
+        body: requestBody
+      });
+      
+      if (response) {
+        const data = await response.json();
+        if (data.data && data.data.length > 0) {
+          return data.data[0].id;
         }
       }
       
+      console.log('All proxies failed for getUserIdFromUsername');
       return null;
     } catch (error) {
+      console.error('Error in getUserIdFromUsername:', error);
       return null;
     }
   }
   
   static async getPlayerData(userId: number) {
     try {
-      const proxies = [
-        'https://cors-anywhere.herokuapp.com/',
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
-      ];
+      // Try to get user info
+      const userResponse = await this.tryProxyRequest(`${this.USERS_URL}/${userId}`);
+      if (!userResponse) return null;
+      const userData = await userResponse.json();
       
-      for (const proxy of proxies) {
-        try {
-          const userResponse = await fetch(proxy + `${this.USERS_URL}/${userId}`);
-          if (!userResponse.ok) continue;
-          const userData = await userResponse.json();
-          
-          const thumbnailResponse = await fetch(proxy + `${this.THUMBNAIL_URL}/${userId}/avatar-headshot?size=150x150&format=Png&isCircular=true`);
-          const thumbnailData = thumbnailResponse.ok ? await thumbnailResponse.json() : { data: [] };
-          
-          const userGroupsResponse = await fetch(proxy + `${this.GROUPS_URL}/${userId}/groups/roles`);
-          const userGroupsData = userGroupsResponse.ok ? await userGroupsResponse.json() : { data: [] };
-          
-          const friendsResponse = await fetch(proxy + `${this.FRIENDS_URL}/${userId}/friends`);
-          const friendsData = friendsResponse.ok ? await friendsResponse.json() : { data: [] };
-          
-          const groupMembershipResponse = await fetch(proxy + `${this.GROUPS_URL}/${this.GROUP_ID}/memberships?userId=${userId}`);
-          const groupMembershipData = groupMembershipResponse.ok ? await groupMembershipResponse.json() : { data: [] };
-          
-          const userGroupRole = groupMembershipData.data?.find((membership: any) => membership.user?.userId === userId);
+      // Get avatar thumbnail
+      const thumbnailResponse = await this.tryProxyRequest(
+        `${this.THUMBNAIL_URL}/${userId}/avatar-headshot?size=150x150&format=Png&isCircular=true`
+      );
+      const thumbnailData = thumbnailResponse?.ok ? await thumbnailResponse.json() : { data: [] };
+      
+      // Get user groups
+      const userGroupsResponse = await this.tryProxyRequest(`${this.GROUPS_URL}/${userId}/groups/roles`);
+      const userGroupsData = userGroupsResponse?.ok ? await userGroupsResponse.json() : { data: [] };
+      
+      // Get friends
+      const friendsResponse = await this.tryProxyRequest(`${this.FRIENDS_URL}/${userId}/friends`);
+      const friendsData = friendsResponse?.ok ? await friendsResponse.json() : { data: [] };
+      
+      // Get group membership
+      const groupMembershipResponse = await this.tryProxyRequest(
+        `${this.GROUPS_URL}/${this.GROUP_ID}/memberships?userId=${userId}`
+      );
+      const groupMembershipData = groupMembershipResponse?.ok ? await groupMembershipResponse.json() : { data: [] };
+      
+      const userGroupRole = groupMembershipData.data?.find((membership: any) => membership.user?.userId === userId);
 
-          return {
-            id: userData.id,
-            name: userData.name,
-            displayName: userData.displayName,
-            description: userData.description || '',
-            created: userData.created,
-            isVerified: userData.hasVerifiedBadge || false,
-            isDeleted: userData.isDeleted || false,
-            externalAppDisplayName: userData.externalAppDisplayName || '',
-            avatarUrl: thumbnailData.data?.[0]?.imageUrl || `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
-            groupRank: userGroupRole?.role?.name || 'Guest',
-            isGroupMember: userGroupRole ? true : false,
-            groupRole: userGroupRole?.role,
-            groups: userGroupsData.data || [],
-            friends: friendsData.data || [],
-            totalFriends: friendsData.data?.length || 0,
-            totalGroups: userGroupsData.data?.length || 0
-          };
-        } catch (proxyError) {
-          continue;
-        }
-      }
-      
-      return null;
+      return {
+        id: userData.id,
+        name: userData.name,
+        displayName: userData.displayName,
+        description: userData.description || '',
+        created: userData.created,
+        isVerified: userData.hasVerifiedBadge || false,
+        isDeleted: userData.isDeleted || false,
+        externalAppDisplayName: userData.externalAppDisplayName || '',
+        avatarUrl: thumbnailData.data?.[0]?.imageUrl || `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
+        groupRank: userGroupRole?.role?.name || 'Guest',
+        isGroupMember: userGroupRole ? true : false,
+        groupRole: userGroupRole?.role,
+        groups: userGroupsData.data || [],
+        friends: friendsData.data || [],
+        totalFriends: friendsData.data?.length || 0,
+        totalGroups: userGroupsData.data?.length || 0
+      };
     } catch (error) {
+      console.error('Error in getPlayerData:', error);
       return null;
     }
   }
   
   static async getGameStats(universeId: number = 35390256) {
     try {
-      const proxies = [
-        'https://cors-anywhere.herokuapp.com/',
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
-      ];
-      
       const apiUrl = `${this.GAMES_URL}?universeIds=${universeId}`;
       
-      for (const proxy of proxies) {
-        try {
-          const response = await fetch(proxy + apiUrl, {
-            headers: {
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            if (data.data && data.data.length > 0) {
-              const gameData = data.data[0];
-              return {
-                visits: gameData.visits || 0,
-                playing: gameData.playing || 0,
-                favorites: gameData.favoritedCount || 0,
-                rating: 0,
-                name: gameData.name || 'Atlanta High School Roleplay',
-                description: gameData.description || '',
-                created: gameData.created,
-                updated: gameData.updated,
-                price: gameData.price || 0,
-                maxPlayers: gameData.maxPlayers || 0,
-                creator: gameData.creator?.name || 'Unknown',
-                genre: gameData.genre || 'Roleplay'
-              };
-            }
-          }
-        } catch (proxyError) {
-          continue;
+      const response = await this.tryProxyRequest(apiUrl);
+      
+      if (response) {
+        const data = await response.json();
+        if (data.data && data.data.length > 0) {
+          const gameData = data.data[0];
+          return {
+            visits: gameData.visits || 0,
+            playing: gameData.playing || 0,
+            favorites: gameData.favoritedCount || 0,
+            rating: 0,
+            name: gameData.name || 'Atlanta High School Roleplay',
+            description: gameData.description || '',
+            created: gameData.created,
+            updated: gameData.updated,
+            price: gameData.price || 0,
+            maxPlayers: gameData.maxPlayers || 0,
+            creator: gameData.creator?.name || 'Unknown',
+            genre: gameData.genre || 'Roleplay'
+          };
         }
       }
       
-      return {
-        visits: Math.floor(Math.random() * 100000) + 50000,
-        playing: Math.floor(Math.random() * 1000) + 200,
-        favorites: Math.floor(Math.random() * 20000) + 5000,
-        rating: parseFloat((Math.random() * 2 + 3).toFixed(1)),
-        name: 'Atlanta High School Roleplay',
-        description: 'Experience the life of a student at Atlanta High School',
-        created: new Date('2023-01-01').toISOString(),
-        updated: new Date().toISOString(),
-        price: 0,
-        maxPlayers: 50,
-        creator: 'AtlantaHSDev',
-        genre: 'Roleplay'
-      };
+      console.log('All proxies failed for getGameStats, using enhanced mock data');
+      return this.getEnhancedMockGameData();
     } catch (error) {
-      return {
-        visits: Math.floor(Math.random() * 100000) + 50000,
-        playing: Math.floor(Math.random() * 1000) + 200,
-        favorites: Math.floor(Math.random() * 20000) + 5000,
-        rating: parseFloat((Math.random() * 2 + 3).toFixed(1)),
-        name: 'Atlanta High School Roleplay',
-        description: 'Experience the life of a student at Atlanta High School',
-        created: new Date('2023-01-01').toISOString(),
-        updated: new Date().toISOString(),
-        price: 0,
-        maxPlayers: 50,
-        creator: 'AtlantaHSDev',
-        genre: 'Roleplay'
-      };
+      console.error('Error in getGameStats:', error);
+      return this.getEnhancedMockGameData();
     }
   }
   
   static async getGameVotes(universeId: number = 35390256) {
     try {
-      const proxies = [
-        'https://cors-anywhere.herokuapp.com/',
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
-      ];
-      
       const apiUrl = `${this.GAMES_URL}/votes?universeIds=${universeId}`;
       
-      for (const proxy of proxies) {
-        try {
-          const response = await fetch(proxy + apiUrl, {
-            headers: {
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
+      const response = await this.tryProxyRequest(apiUrl);
+      
+      if (response) {
+        const data = await response.json();
+        if (data.data && data.data.length > 0) {
+          const voteData = data.data[0];
+          const totalVotes = (voteData.upVotes || 0) + (voteData.downVotes || 0);
+          const rating = totalVotes > 0 ? ((voteData.upVotes || 0) / totalVotes) * 5 : 0;
           
-          if (response.ok) {
-            const data = await response.json();
-            if (data.data && data.data.length > 0) {
-              const voteData = data.data[0];
-              const totalVotes = (voteData.upVotes || 0) + (voteData.downVotes || 0);
-              const rating = totalVotes > 0 ? ((voteData.upVotes || 0) / totalVotes) * 5 : 0;
-              
-              return {
-                upVotes: voteData.upVotes || 0,
-                downVotes: voteData.downVotes || 0,
-                totalVotes,
-                rating: parseFloat(rating.toFixed(1))
-              };
-            }
-          }
-        } catch (proxyError) {
-          continue;
+          return {
+            upVotes: voteData.upVotes || 0,
+            downVotes: voteData.downVotes || 0,
+            totalVotes,
+            rating: parseFloat(rating.toFixed(1))
+          };
         }
       }
       
-      return {
-        upVotes: Math.floor(Math.random() * 10000) + 5000,
-        downVotes: Math.floor(Math.random() * 1000) + 200,
-        totalVotes: 0,
-        rating: parseFloat((Math.random() * 2 + 3).toFixed(1))
-      };
+      console.log('All proxies failed for getGameVotes, using enhanced mock data');
+      return this.getEnhancedMockVoteData();
     } catch (error) {
-      return {
-        upVotes: Math.floor(Math.random() * 10000) + 5000,
-        downVotes: Math.floor(Math.random() * 1000) + 200,
-        totalVotes: 0,
-        rating: parseFloat((Math.random() * 2 + 3).toFixed(1))
-      };
+      console.error('Error in getGameVotes:', error);
+      return this.getEnhancedMockVoteData();
     }
   }
   
   static async getFavoritesCount(universeId: number = 35390256) {
     try {
-      const proxies = [
-        'https://cors-anywhere.herokuapp.com/',
-        'https://api.allorigins.win/raw?url=',
-        'https://corsproxy.io/?'
-      ];
-      
       const apiUrl = `${this.GAMES_URL}/${universeId}/favorites/count`;
       
-      for (const proxy of proxies) {
-        try {
-          const response = await fetch(proxy + apiUrl, {
-            headers: {
-              'Accept': 'application/json',
-              'X-Requested-With': 'XMLHttpRequest'
-            }
-          });
-          
-          if (response.ok) {
-            const data = await response.json();
-            return {
-              favoritesCount: data.favoritesCount || 0
-            };
-          }
-        } catch (proxyError) {
-          continue;
-        }
+      const response = await this.tryProxyRequest(apiUrl);
+      
+      if (response) {
+        const data = await response.json();
+        return {
+          favoritesCount: data.favoritesCount || 0
+        };
       }
       
-      return {
-        favoritesCount: Math.floor(Math.random() * 20000) + 5000
-      };
+      console.log('All proxies failed for getFavoritesCount, using enhanced mock data');
+      return this.getEnhancedMockFavoritesData();
     } catch (error) {
-      return {
-        favoritesCount: Math.floor(Math.random() * 20000) + 5000
-      };
+      console.error('Error in getFavoritesCount:', error);
+      return this.getEnhancedMockFavoritesData();
     }
+  }
+  
+  // Enhanced mock data methods with more realistic values
+  private static getEnhancedMockGameData() {
+    return {
+      visits: 127843,
+      playing: 342,
+      favorites: 28947,
+      rating: 4.7,
+      name: 'Atlanta High School Roleplay',
+      description: 'Experience authentic high school life in Atlanta! Join as a student, teacher, or staff member. Attend classes, join clubs, participate in events, and create your own story in our immersive roleplay community.',
+      created: '2023-01-15T08:00:00.000Z',
+      updated: new Date().toISOString(),
+      price: 0,
+      maxPlayers: 60,
+      creator: 'AtlantaHSDevelopment',
+      genre: 'Roleplay'
+    };
+  }
+  
+  private static getEnhancedMockVoteData() {
+    const upVotes = 15420;
+    const downVotes = 890;
+    const totalVotes = upVotes + downVotes;
+    const rating = (upVotes / totalVotes) * 5;
+    
+    return {
+      upVotes,
+      downVotes,
+      totalVotes,
+      rating: parseFloat(rating.toFixed(1))
+    };
+  }
+  
+  private static getEnhancedMockFavoritesData() {
+    return {
+      favoritesCount: 28947
+    };
   }
 }
 
@@ -571,17 +661,37 @@ const WrapUp2025 = () => {
   const [, setUsername] = useState('');
   const [isFetchingData, setIsFetchingData] = useState(false);
   const [showUsernameInput, setShowUsernameInput] = useState(true);
+  const [apiStatus, setApiStatus] = useState<'loading' | 'success' | 'error' | 'partial'>('loading');
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [playerRankings, setPlayerRankings] = useState({
+    fireAlarmRank: 0,
+    drillRank: 0,
+    attendanceRank: 0,
+    socialRank: 0
+  });
   
   const sectionRef = useRef<HTMLDivElement>(null);
   
   const handleUsernameSubmit = async (submittedUsername: string) => {
     setIsFetchingData(true);
+    setLoadingStats(true);
+    setApiStatus('loading');
     setUsername(submittedUsername);
+    
+    // Generate random rankings for company achievements
+    const rankings = {
+      fireAlarmRank: Math.floor(Math.random() * 50) + 1,
+      drillRank: Math.floor(Math.random() * 100) + 1,
+      attendanceRank: Math.floor(Math.random() * 200) + 1,
+      socialRank: Math.floor(Math.random() * 150) + 1
+    };
+    setPlayerRankings(rankings);
     
     try {
       const userId = await RobloxAPI.getUserIdFromUsername(submittedUsername);
       
       if (!userId) {
+        setApiStatus('error');
         const mockPlayerData = {
           id: Math.floor(Math.random() * 1000000000),
           name: submittedUsername,
@@ -607,14 +717,15 @@ const WrapUp2025 = () => {
           friends: mockPlayerData.totalFriends,
           groups: mockPlayerData.totalGroups,
           accountAge: Math.floor(Math.random() * 5) + 1,
-          alarmsPulled: Math.floor(Math.random() * 1000) + 100,
-          drillsCompleted: Math.floor(Math.random() * 50) + 10,
-          timePlayed: Math.floor(Math.random() * 100) + 20,
-          achievements: Math.floor(Math.random() * 20) + 5
+          alarmsPulled: Math.floor(Math.random() * 3000) + 500,
+          drillsCompleted: Math.floor(Math.random() * 200) + 50,
+          timePlayed: Math.floor(Math.random() * 300) + 100,
+          achievements: Math.floor(Math.random() * 40) + 10
         }));
         
         setShowUsernameInput(false);
         setIsFetchingData(false);
+        setLoadingStats(false);
         return;
       }
       
@@ -630,17 +741,22 @@ const WrapUp2025 = () => {
       });
       
       if (playerInfo) {
+        setApiStatus('success');
         setPlayerData(playerInfo);
+        
+        // Generate enhanced stats based on group membership and rankings
+        const isGroupMember = playerInfo.isGroupMember;
+        const baseMultiplier = isGroupMember ? 2.5 : 1.0;
         
         setCounters(prev => ({
           ...prev,
           friends: playerInfo.totalFriends,
           groups: playerInfo.totalGroups,
           accountAge: Math.floor((Date.now() - new Date(playerInfo.created).getTime()) / (1000 * 60 * 60 * 24 * 365)),
-          alarmsPulled: playerInfo.isGroupMember ? Math.floor(Math.random() * 2000) + 500 : Math.floor(Math.random() * 500) + 50,
-          drillsCompleted: playerInfo.isGroupMember ? Math.floor(Math.random() * 100) + 50 : Math.floor(Math.random() * 30) + 5,
-          timePlayed: playerInfo.isGroupMember ? Math.floor(Math.random() * 200) + 100 : Math.floor(Math.random() * 50) + 10,
-          achievements: playerInfo.isGroupMember ? Math.floor(Math.random() * 30) + 15 : Math.floor(Math.random() * 10) + 3,
+          alarmsPulled: Math.floor((Math.random() * 4000 + 1000) * baseMultiplier),
+          drillsCompleted: Math.floor((Math.random() * 300 + 100) * baseMultiplier),
+          timePlayed: Math.floor((Math.random() * 400 + 150) * baseMultiplier),
+          achievements: Math.floor((Math.random() * 50 + 20) * baseMultiplier),
           robloxVisits: gameStats.visits,
           robloxPlaying: gameStats.playing,
           robloxFavorites: favoritesCount.favoritesCount,
@@ -649,6 +765,7 @@ const WrapUp2025 = () => {
         
         setShowUsernameInput(false);
       } else {
+        setApiStatus('partial');
         const mockPlayerData = {
           id: userId,
           name: submittedUsername,
@@ -674,16 +791,21 @@ const WrapUp2025 = () => {
           friends: mockPlayerData.totalFriends,
           groups: mockPlayerData.totalGroups,
           accountAge: Math.floor(Math.random() * 5) + 1,
-          alarmsPulled: Math.floor(Math.random() * 1000) + 100,
-          drillsCompleted: Math.floor(Math.random() * 50) + 10,
-          timePlayed: Math.floor(Math.random() * 100) + 20,
-          achievements: Math.floor(Math.random() * 20) + 5
+          alarmsPulled: Math.floor(Math.random() * 3000) + 500,
+          drillsCompleted: Math.floor(Math.random() * 200) + 50,
+          timePlayed: Math.floor(Math.random() * 300) + 100,
+          achievements: Math.floor(Math.random() * 40) + 10,
+          robloxVisits: gameStats.visits,
+          robloxPlaying: gameStats.playing,
+          robloxFavorites: favoritesCount.favoritesCount,
+          robloxRating: gameVotes.rating
         }));
         
         setShowUsernameInput(false);
       }
     } catch (error) {
-      alert('An error occurred while fetching your data. Using demo data instead.');
+      setApiStatus('error');
+      console.error('API Error:', error);
       
       const mockPlayerData = {
         id: Math.floor(Math.random() * 1000000000),
@@ -710,15 +832,16 @@ const WrapUp2025 = () => {
         friends: mockPlayerData.totalFriends,
         groups: mockPlayerData.totalGroups,
         accountAge: Math.floor(Math.random() * 5) + 1,
-        alarmsPulled: Math.floor(Math.random() * 1000) + 100,
-        drillsCompleted: Math.floor(Math.random() * 50) + 10,
-        timePlayed: Math.floor(Math.random() * 100) + 20,
-        achievements: Math.floor(Math.random() * 20) + 5
+        alarmsPulled: Math.floor(Math.random() * 3000) + 500,
+        drillsCompleted: Math.floor(Math.random() * 200) + 50,
+        timePlayed: Math.floor(Math.random() * 300) + 100,
+        achievements: Math.floor(Math.random() * 40) + 10
       }));
       
       setShowUsernameInput(false);
     } finally {
       setIsFetchingData(false);
+      setTimeout(() => setLoadingStats(false), 1000);
     }
   };
   
@@ -819,9 +942,12 @@ const WrapUp2025 = () => {
 
     <div key="page-2" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11]">
       <div className="max-w-4xl mx-auto w-full">
-        <h2 className="text-3xl font-bold text-center mb-12 text-white">
-          Your 2025 Stats
-        </h2>
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold text-white">
+            Your 2025 Stats
+          </h2>
+          <APIStatusIndicator status={apiStatus} />
+        </div>
         
         {gameData && (
           <div className="bg-[#1a1a1f] rounded-xl p-6 mb-8 border border-[#6C5CE7]/20">
@@ -854,20 +980,20 @@ const WrapUp2025 = () => {
         <div className="mb-12">
           <h3 className="text-xl font-semibold text-white mb-6">Roblox Game Stats</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AdvancedStatCard value={counters.robloxVisits} label="Game Visits" icon={Users} delay={0.1} trend="up" color="#6C5CE7" />
-            <AdvancedStatCard value={counters.robloxPlaying} label="Currently Playing" icon={Activity} delay={0.2} trend="neutral" color="#00E5FF" />
-            <AdvancedStatCard value={counters.robloxFavorites} label="Favorites" icon={StarIcon} delay={0.3} trend="up" color="#FFD700" />
-            <AdvancedStatCard value={counters.robloxRating} label="Rating" icon={Crown} delay={0.4} trend="up" color="#FF6B6B" />
+            <EnhancedStatCard value={counters.robloxVisits} label="Game Visits" icon={Users} delay={0.1} trend="up" color="#6C5CE7" isLoading={loadingStats} />
+            <EnhancedStatCard value={counters.robloxPlaying} label="Currently Playing" icon={Activity} delay={0.2} trend="neutral" color="#00E5FF" isLoading={loadingStats} />
+            <EnhancedStatCard value={counters.robloxFavorites} label="Favorites" icon={StarIcon} delay={0.3} trend="up" color="#FFD700" isLoading={loadingStats} />
+            <EnhancedStatCard value={counters.robloxRating} label="Rating" icon={Crown} delay={0.4} trend="up" color="#FF6B6B" isLoading={loadingStats} />
           </div>
         </div>
         
         <div className="mb-12">
           <h3 className="text-xl font-semibold text-white mb-6">Your Personal Stats</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <AdvancedStatCard value={counters.alarmsPulled} label="Alarms Pulled" icon={Flame} delay={1.6} trend="up" color="#FF6B6B" />
-            <AdvancedStatCard value={counters.drillsCompleted} label="Drills Completed" icon={Target} delay={1.8} trend="up" color="#4ECDC4" />
-            <AdvancedStatCard value={`${counters.timePlayed}h`} label="Time Played" icon={Clock} delay={2.0} trend="up" color="#45B7D1" />
-            <AdvancedStatCard value={counters.achievements} label="Achievements" icon={Award} delay={2.2} trend="up" color="#96CEB4" />
+            <EnhancedStatCard value={counters.alarmsPulled} label="Alarms Pulled" icon={Flame} delay={1.6} trend="up" color="#FF6B6B" isLoading={loadingStats} />
+            <EnhancedStatCard value={counters.drillsCompleted} label="Drills Completed" icon={Target} delay={1.8} trend="up" color="#4ECDC4" isLoading={loadingStats} />
+            <EnhancedStatCard value={`${counters.timePlayed}h`} label="Time Played" icon={Clock} delay={2.0} trend="up" color="#45B7D1" isLoading={loadingStats} />
+            <EnhancedStatCard value={counters.achievements} label="Achievements" icon={Award} delay={2.2} trend="up" color="#96CEB4" isLoading={loadingStats} />
           </div>
         </div>
         
@@ -884,14 +1010,75 @@ const WrapUp2025 = () => {
         </h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-          <AdvancedAchievementBadge icon="🔥" name="Fire Starter" unlocked rarity="common" />
-          <AdvancedAchievementBadge icon="🚨" name="Alert Pro" unlocked rarity="rare" />
-          <AdvancedAchievementBadge icon="⚡" name="Speed Demon" unlocked rarity="epic" />
-          <AdvancedAchievementBadge icon="🌟" name="Superstar" unlocked={playerData?.isGroupMember || false} rarity="legendary" />
-          <AdvancedAchievementBadge icon="💎" name="Diamond" unlocked rarity="rare" progress={75} />
-          <AdvancedAchievementBadge icon="🏆" name="Champion" unlocked rarity="epic" />
-          <AdvancedAchievementBadge icon="👑" name="Royalty" unlocked={playerData?.isGroupMember || false} rarity="legendary" />
-          <AdvancedAchievementBadge icon="🎯" name="Perfect" unlocked rarity="common" progress={90} />
+          <CompanyAchievementBadge 
+            icon="🔥" 
+            name="Fire Alarm Master" 
+            description="Pulled the most fire alarms"
+            unlocked 
+            rarity="legendary" 
+            rank={playerRankings.fireAlarmRank}
+            metric={`${counters.alarmsPulled} pulls`}
+          />
+          <CompanyAchievementBadge 
+            icon="🚨" 
+            name="Drill Champion" 
+            description="Excellence in safety drills"
+            unlocked 
+            rarity="epic" 
+            rank={playerRankings.drillRank}
+            metric={`${counters.drillsCompleted} drills`}
+          />
+          <CompanyAchievementBadge 
+            icon="📚" 
+            name="Perfect Attendance" 
+            description="Never missed a class"
+            unlocked 
+            rarity="rare" 
+            rank={playerRankings.attendanceRank}
+            metric={`${counters.timePlayed} hours`}
+          />
+          <CompanyAchievementBadge 
+            icon="👑" 
+            name="Social Butterfly" 
+            description="Most popular student"
+            unlocked={playerData?.isGroupMember || false} 
+            rarity="legendary" 
+            rank={playerRankings.socialRank}
+            metric={`${counters.friends} friends`}
+          />
+          <CompanyAchievementBadge 
+            icon="💎" 
+            name="Diamond Member" 
+            description="Premium status achieved"
+            unlocked={playerData?.isGroupMember || false} 
+            rarity="legendary"
+            progress={playerData?.isGroupMember ? 100 : 60}
+          />
+          <CompanyAchievementBadge 
+            icon="🏆" 
+            name="Year Champion" 
+            description="Top performer of 2025"
+            unlocked 
+            rarity="epic"
+            metric={`Top ${Math.floor(counters.achievements / 10)}%`}
+          />
+          <CompanyAchievementBadge 
+            icon="⚡" 
+            name="Speed Runner" 
+            description="Fastest response times"
+            unlocked 
+            rarity="rare"
+            metric={`${Math.floor(Math.random() * 50 + 10)} sec avg`}
+          />
+          <CompanyAchievementBadge 
+            icon="🎯" 
+            name="Perfect Score" 
+            description="100% accuracy rate"
+            unlocked 
+            rarity="epic"
+            progress={90}
+            metric="98.5% accuracy"
+          />
         </div>
         
         <div className="text-center mt-12">
@@ -904,7 +1091,7 @@ const WrapUp2025 = () => {
         </div>
       </div>
     </div>
-  ], [counters, currentPage, playerData, gameData, miniGameScore, showUsernameInput]);
+  ], [counters, currentPage, playerData, gameData, miniGameScore, showUsernameInput, playerRankings]);
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
