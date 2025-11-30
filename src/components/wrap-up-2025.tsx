@@ -1,6 +1,69 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { Trophy, ChevronRight, Award, Clock, Users, Target, Flame, Activity, Crown, Star as StarIcon } from 'lucide-react';
 
+// Simplified username input component
+const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) => void; isLoading: boolean }) => {
+  const [inputValue, setInputValue] = useState('');
+  
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (inputValue.trim()) {
+      onSubmit(inputValue.trim());
+    }
+  };
+  
+  return (
+    <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
+      <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20">
+        <h2 className="text-2xl font-bold text-white mb-4 text-center">Enter Your Roblox Username</h2>
+        <div className="space-y-4">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Roblox username..."
+            className="w-full px-4 py-3 bg-[#2a2a2f] border border-[#6C5CE7]/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#6C5CE7] transition-colors"
+            disabled={isLoading}
+          />
+          <button
+            type="submit"
+            disabled={isLoading || !inputValue.trim()}
+            className="w-full py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? 'Loading...' : 'View My 2025 Wrapped'}
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+};
+
+// Simple mini game component
+const SimpleMiniGame = ({ score, onScoreChange, onComplete }: { 
+  score: number; 
+  onScoreChange: (score: number) => void;
+  onComplete?: (score: number) => void;
+}) => {
+  const handleClick = () => {
+    onScoreChange(score + 1);
+  };
+  
+  return (
+    <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20">
+      <h3 className="text-xl font-bold text-white mb-4">Click Challenge!</h3>
+      <div className="text-center">
+        <div className="text-3xl font-bold text-[#6C5CE7] mb-4">{score}</div>
+        <button
+          onClick={handleClick}
+          className="px-6 py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-lg hover:opacity-90 transition-opacity"
+        >
+          Click Me!
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Roblox API service
 class RobloxAPI {
   private static readonly USERS_URL = 'https://users.roblox.com/v1/users';
@@ -166,114 +229,95 @@ class RobloxAPI {
   }
 }
 
-// Username input component - simplified
-const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) => void; isLoading: boolean }) => {
-  const [username, setUsername] = useState('');
-  const inputRef = useRef<HTMLInputElement>(null);
+// Simplified stat card with CSS animations
+const SimpleStatCard = ({ value, label, icon: Icon, delay = 0 }: {
+  value: string | number;
+  label: string;
+  icon: any;
+  delay?: number;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [displayValue, setDisplayValue] = useState(0);
   
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, []);
+    const timer = setTimeout(() => setIsVisible(true), delay * 1000);
+    return () => clearTimeout(timer);
+  }, [delay]);
   
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (username.trim()) {
-      onSubmit(username.trim());
+  useEffect(() => {
+    if (isVisible && typeof value === 'number') {
+      const duration = 2000;
+      const startTime = performance.now();
+      const targetValue = value;
+      
+      const animateCounter = () => {
+        const currentTime = performance.now();
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        const currentValue = Math.floor(targetValue * easeOutQuart);
+        
+        setDisplayValue(currentValue);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animateCounter);
+        }
+      };
+      
+      requestAnimationFrame(animateCounter);
+    } else if (isVisible && typeof value === 'string') {
+      setDisplayValue(value as any);
     }
-  };
+  }, [isVisible, value]);
   
   return (
-    <div className="bg-[#1a1a1f] rounded-2xl p-8 max-w-md mx-auto border border-[#6C5CE7]/30">
-      <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-[#6C5CE7] rounded-xl flex items-center justify-center text-2xl mx-auto mb-4">
-          👤
+    <div 
+      className={`bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20 hover:border-[#6C5CE7]/40 transition-all duration-300 transform ${
+        isVisible ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
+      }`}
+      style={{ transitionDelay: `${delay}s` }}
+    >
+      <div className="flex items-center gap-3 mb-3">
+        <div className="w-10 h-10 bg-[#6C5CE7] rounded-lg flex items-center justify-center">
+          <Icon className="w-5 h-5 text-white" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Enter Roblox Username</h2>
-        <p className="text-[#A3A3A3] text-sm">Get your personalized 2025 wrapped</p>
+        <div className="text-white font-semibold">{label}</div>
       </div>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          ref={inputRef}
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-          className="w-full px-4 py-3 bg-[#2a2a2f] border border-[#3a3a3f] rounded-lg text-white placeholder-[#A3A3A3] focus:outline-none focus:border-[#6C5CE7] transition-colors"
-          disabled={isLoading}
-        />
-        
-        <button
-          type="submit"
-          disabled={!username.trim() || isLoading}
-          className="w-full py-3 bg-[#6C5CE7] text-white font-semibold rounded-lg transition-colors hover:bg-[#5a4bd7] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? 'Loading...' : 'Get Wrapped'}
-        </button>
-      </form>
+      <div className="text-2xl font-bold text-white">
+        {typeof displayValue === 'number' ? displayValue.toLocaleString() : displayValue}
+      </div>
     </div>
   );
 };
 
-// Simplified mini-game
-const SimpleMiniGame = ({ onComplete }: { onComplete: (score: number) => void }) => {
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(10);
-  const [isActive, setIsActive] = useState(false);
+const WrapUp2025 = () => {
+  const [counters, setCounters] = useState({
+    visits: 0,
+    discord: 0,
+    ranking: 0,
+    year: 0,
+    alarmsPulled: 0,
+    drillsCompleted: 0,
+    timePlayed: 0,
+    achievements: 0,
+    robloxVisits: 0,
+    robloxPlaying: 0,
+    robloxFavorites: 0,
+    robloxRating: 0,
+    friends: 0,
+    groups: 0,
+    accountAge: 0
+  });
+  const [currentPage, setCurrentPage] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [playerData, setPlayerData] = useState<any>(null);
+  const [miniGameScore, setMiniGameScore] = useState(0);
+  const [username, setUsername] = useState('');
+  const [isFetchingData, setIsFetchingData] = useState(false);
+  const [showUsernameInput, setShowUsernameInput] = useState(true);
   
-  useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
-      return () => clearTimeout(timer);
-    } else if (timeLeft === 0) {
-      setIsActive(false);
-      onComplete(score);
-    }
-  }, [isActive, timeLeft, onComplete]);
-  
-  const startGame = () => {
-    setIsActive(true);
-    setScore(0);
-    setTimeLeft(10);
-  };
-  
-  const handleClick = () => {
-    if (isActive) {
-      setScore(score + 1);
-    }
-  };
-  
-  return (
-    <div className="bg-[#1a1a1f] rounded-xl p-6 text-center border border-[#6C5CE7]/20">
-      <h3 className="text-xl font-bold text-white mb-4">🔥 Speed Challenge</h3>
-      
-      {!isActive ? (
-        <button 
-          onClick={startGame}
-          className="px-6 py-3 bg-[#6C5CE7] text-white font-semibold rounded-lg transition-colors hover:bg-[#5a4bd7]"
-        >
-          {timeLeft === 0 ? 'Try Again' : 'Start Game'}
-        </button>
-      ) : (
-        <div className="space-y-4">
-          <div className="flex justify-between text-white text-sm">
-            <span>Score: {score}</span>
-            <span>Time: {timeLeft}s</span>
-          </div>
-          
-          <button
-            onClick={handleClick}
-            className="w-20 h-20 bg-red-500 hover:bg-red-600 rounded-full text-white font-bold text-xl transition-colors"
-          >
-            🔥
-          </button>
-        </div>
-      )}
-    </div>
-  );
-};
+  const sectionRef = useRef<HTMLDivElement>(null);
 
 // Simplified achievement badge
 const SimpleAchievementBadge = ({ icon, name, unlocked }: {
@@ -356,7 +400,6 @@ const SimpleStatCard = ({
 };
 
 const WrapUp2025 = () => {
-  const [counters, setCounters] = useState({
     visits: 0,
     discord: 0,
     ranking: 0,
@@ -525,33 +568,6 @@ const WrapUp2025 = () => {
       setIsFetchingData(false);
     }
   };
-  // Fetch Roblox data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const gameStats = await RobloxAPI.getGameStats();
-        if (gameStats) {
-          setCounters(prev => ({
-            ...prev,
-            robloxVisits: gameStats.visits,
-            robloxPlaying: gameStats.playing,
-            robloxFavorites: gameStats.favorites,
-            robloxRating: gameStats.rating
-          }));
-        }
-        
-        // Mock player data for demo
-        const playerStats = await RobloxAPI.getPlayerStats();
-        if (playerStats) {
-          setPlayerData(playerStats);
-        }
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
-    };
-    
-    fetchData();
-  }, []);
   
   // Mouse tracking for parallax effects - throttled
   useEffect(() => {
@@ -699,7 +715,7 @@ const WrapUp2025 = () => {
         
         {/* Simple Mini Game */}
         <div className="flex justify-center">
-          <SimpleMiniGame onComplete={(score) => setMiniGameScore(score)} />
+          <SimpleMiniGame score={miniGameScore} onScoreChange={setMiniGameScore} />
         </div>
       </div>
     </div>,
