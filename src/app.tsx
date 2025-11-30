@@ -12,6 +12,7 @@ import { PrivacyPolicy } from "@/pages/PrivacyPolicy";
 import { TermsOfService } from "@/pages/TermsOfService";
 import { ChristmasCursor } from "@/components/ChristmasCursor";
 import { MobileDetector } from "@/components/MobileDetector";
+import WrapUp2025 from "@/components/wrap-up-2025";
 
 const App = () => {
   return (
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/apply" element={<Apply />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms-of-service" element={<TermsOfService />} />
+            <Route path="/2025" element={<WrapUp2025 />} />
             {/* Fallback to home for unknown routes */}
             <Route path="*" element={<Hero />} />
           </Routes>
