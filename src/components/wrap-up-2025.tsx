@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo, useCallback } from 'react';
-import { Trophy, ChevronRight, Award, Clock, Users, Target, Flame, Activity, Crown, Star as StarIcon, Sparkles } from 'lucide-react';
+import { Trophy, ChevronRight, Award, Clock, Users, Target, Flame, Activity, Crown, Star as StarIcon, Sparkles, Shield, TrendingUp, Gamepad2 } from 'lucide-react';
 
 // Performance monitoring hook
 const usePerformanceMonitor = (componentName: string) => {
@@ -18,15 +18,18 @@ const usePerformanceMonitor = (componentName: string) => {
   });
 };
 
-// Particle system for advanced UI
-const ParticleSystem = ({ count = 50, className = '' }: { count?: number; className?: string }) => {
+// Enhanced particle system with multiple types and better performance
+const ParticleSystem = ({ count = 80, className = '' }: { count?: number; className?: string }) => {
   const particles = useMemo(() => 
     Array.from({ length: count }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
-      size: Math.random() * 3 + 1,
-      duration: Math.random() * 3 + 2
+      size: Math.random() * 4 + 1,
+      duration: Math.random() * 5 + 3,
+      delay: Math.random() * 2,
+      type: Math.random() > 0.7 ? 'glow' : 'normal',
+      color: Math.random() > 0.5 ? '#6C5CE7' : '#00E5FF'
     })), [count]
   );
   
@@ -35,14 +38,18 @@ const ParticleSystem = ({ count = 50, className = '' }: { count?: number; classN
       {particles.map(particle => (
         <div
           key={particle.id}
-          className="absolute bg-[#6C5CE7] rounded-full opacity-20"
+          className={`absolute rounded-full ${
+            particle.type === 'glow' ? 'blur-sm opacity-30' : 'opacity-20'
+          }`}
           style={{
             left: `${particle.x}%`,
             top: `${particle.y}%`,
             width: `${particle.size}px`,
             height: `${particle.size}px`,
+            backgroundColor: particle.color,
             animation: `float ${particle.duration}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 2}s`
+            animationDelay: `${particle.delay}s`,
+            boxShadow: particle.type === 'glow' ? `0 0 ${particle.size * 2}px ${particle.color}` : 'none'
           }}
         />
       ))}
@@ -50,17 +57,22 @@ const ParticleSystem = ({ count = 50, className = '' }: { count?: number; classN
   );
 };
 
-// Enhanced loading spinner component
+// Enhanced loading spinner with better animations
 const LoadingSpinner = ({ message = 'Loading...' }: { message?: string }) => (
   <div className="flex flex-col items-center justify-center p-8">
-    <div className="relative w-16 h-16 mb-4">
+    <div className="relative w-20 h-20 mb-6">
       <div className="absolute inset-0 border-4 border-[#6C5CE7]/20 rounded-full"></div>
       <div className="absolute inset-0 border-4 border-[#6C5CE7] border-t-transparent rounded-full animate-spin"></div>
       <div className="absolute inset-2 border-4 border-[#00E5FF]/20 rounded-full"></div>
       <div className="absolute inset-2 border-4 border-[#00E5FF] border-t-transparent rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
+      <div className="absolute inset-4 border-2 border-yellow-400/30 rounded-full"></div>
+      <div className="absolute inset-4 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin" style={{ animationDuration: '2s' }}></div>
+      
+      {/* Central glow effect */}
+      <div className="absolute inset-8 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] rounded-full opacity-50 animate-pulse"></div>
     </div>
-    <p className="text-white text-lg font-medium animate-pulse">{message}</p>
-    <p className="text-[#A3A3A3] text-sm mt-2">Fetching your Roblox data...</p>
+    <p className="text-white text-xl font-semibold animate-pulse mb-2">{message}</p>
+    <p className="text-[#A3A3A3] text-sm animate-pulse">Connecting to Roblox servers...</p>
   </div>
 );
 
@@ -83,7 +95,7 @@ const APIStatusIndicator = ({ status }: { status: 'loading' | 'success' | 'error
   );
 };
 
-// Enhanced stat card with shimmer loading effect
+// Ultra-enhanced stat card with premium animations and effects
 const EnhancedStatCard = ({ 
   value, 
   label, 
@@ -112,7 +124,7 @@ const EnhancedStatCard = ({
   
   useEffect(() => {
     if (isVisible && !isLoading && typeof value === 'number') {
-      const duration = 2000;
+      const duration = 2500;
       const startTime = performance.now();
       const targetValue = value;
       
@@ -139,61 +151,91 @@ const EnhancedStatCard = ({
   
   if (isLoading) {
     return (
-      <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20 overflow-hidden">
+      <div className="bg-[#1a1a1f] rounded-2xl p-8 border border-[#6C5CE7]/20 overflow-hidden relative">
         <div className="animate-pulse">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-lg bg-gray-700"></div>
+          <div className="flex items-center gap-4 mb-4">
+            <div className="w-12 h-12 rounded-xl bg-gray-700"></div>
             <div className="flex-1">
-              <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-700 rounded w-1/2"></div>
+              <div className="h-5 bg-gray-700 rounded w-3/4 mb-3"></div>
+              <div className="h-4 bg-gray-700 rounded w-1/2"></div>
             </div>
           </div>
-          <div className="h-8 bg-gray-700 rounded w-1/2"></div>
+          <div className="h-10 bg-gray-700 rounded w-1/2"></div>
         </div>
+        {/* Shimmer effect */}
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 animate-shimmer"></div>
       </div>
     );
   }
   
   return (
     <div 
-      className={`bg-[#1a1a1f] rounded-xl p-6 border transition-all duration-500 transform cursor-pointer ${
+      className={`bg-[#1a1a1f] rounded-2xl p-8 border transition-all duration-700 transform cursor-pointer relative overflow-hidden group ${
         isVisible ? 'scale-100 opacity-100' : 'scale-90 opacity-0'
       } ${
         isHovered 
-          ? 'border-[#6C5CE7] shadow-lg shadow-[#6C5CE7]/20 scale-105' 
+          ? 'border-[#6C5CE7] shadow-2xl shadow-[#6C5CE7]/40 scale-105' 
           : 'border-[#6C5CE7]/20 hover:border-[#6C5CE7]/40'
       }`}
       style={{ 
         transitionDelay: `${delay}s`,
-        background: isHovered ? `linear-gradient(135deg, #1a1a1f 0%, ${color}15 100%)` : '#1a1a1f'
+        background: isHovered 
+          ? `linear-gradient(135deg, #1a1a1f 0%, ${color}20 50%, ${color}10 100%)` 
+          : 'linear-gradient(135deg, #1a1a1f 0%, #1a1a1f 100%)'
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex items-center gap-3 mb-3">
-        <div 
-          className="w-10 h-10 rounded-lg flex items-center justify-center transition-all duration-300"
-          style={{ backgroundColor: color }}
-        >
-          <Icon className="w-5 h-5 text-white" />
-        </div>
-        <div className="text-white font-semibold">{label}</div>
-        {trend && (
-          <div className={`ml-auto text-sm font-medium ${
-            trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-gray-400'
-          }`}>
-            {trend === 'up' ? '↑' : trend === 'down' ? '↓' : '→'}
+      {/* Glow effect on hover */}
+      <div 
+        className="absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-500 blur-xl"
+        style={{ backgroundColor: color }}
+      />
+      
+      <div className="relative z-10">
+        <div className="flex items-center gap-4 mb-4">
+          <div 
+            className="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-500 shadow-lg"
+            style={{ 
+              backgroundColor: color,
+              transform: isHovered ? 'scale(1.1) rotate(5deg)' : 'scale(1) rotate(0deg)'
+            }}
+          >
+            <Icon className="w-6 h-6 text-white" />
           </div>
-        )}
-      </div>
-      <div className="text-2xl font-bold text-white">
-        {typeof displayValue === 'number' ? displayValue.toLocaleString() : displayValue}
+          <div className="flex-1">
+            <div className="text-white font-bold text-lg">{label}</div>
+            {trend && (
+              <div className={`text-sm font-medium flex items-center gap-1 ${
+                trend === 'up' ? 'text-green-400' : trend === 'down' ? 'text-red-400' : 'text-gray-400'
+              }`}>
+                {trend === 'up' ? <TrendingUp className="w-4 h-4" /> : trend === 'down' ? <TrendingUp className="w-4 h-4 rotate-180" /> : <div className="w-4 h-4" />}
+                {trend === 'up' ? 'Rising' : trend === 'down' ? 'Falling' : 'Stable'}
+              </div>
+            )}
+          </div>
+        </div>
+        
+        <div className="text-3xl font-bold text-white mb-2">
+          {typeof displayValue === 'number' ? displayValue.toLocaleString() : displayValue}
+        </div>
+        
+        {/* Progress bar for visual effect */}
+        <div className="w-full bg-gray-700 rounded-full h-1 overflow-hidden">
+          <div 
+            className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] h-1 rounded-full transition-all duration-1000"
+            style={{ 
+              width: isVisible ? '100%' : '0%',
+              transitionDelay: `${delay + 0.5}s`
+            }}
+          />
+        </div>
       </div>
     </div>
   );
 };
 
-// Enhanced achievement badge with company-style rankings
+// Ultra-enhanced achievement badge with premium effects
 const CompanyAchievementBadge = ({ 
   icon, 
   name, 
@@ -229,42 +271,65 @@ const CompanyAchievementBadge = ({
     legendary: 'border-yellow-500'
   };
   
+  const rarityGlow = {
+    common: 'shadow-gray-500/30',
+    rare: 'shadow-blue-500/40',
+    epic: 'shadow-purple-500/50',
+    legendary: 'shadow-yellow-500/60'
+  };
+  
   return (
     <div 
-      className={`text-center transition-all duration-300 transform cursor-pointer ${
-        !unlocked && 'opacity-50'
-      } ${isHovered ? 'scale-110' : ''}`}
+      className={`text-center transition-all duration-500 transform cursor-pointer relative ${
+        !unlocked && 'opacity-50 grayscale'
+      } ${isHovered ? 'scale-110 -translate-y-2' : ''}`}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className={`relative mb-2`}>
-        <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br ${rarityColors[rarity]} border-2 ${rarityBorders[rarity]} shadow-lg`}>
+      {/* Glow effect */}
+      {unlocked && (
+        <div 
+          className={`absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-60 transition-opacity duration-500 ${rarityGlow[rarity]}`}
+          style={{ 
+            background: `linear-gradient(135deg, ${rarityColors[rarity].split(' ')[0].replace('from-', '')} 0%, ${rarityColors[rarity].split(' ')[2].replace('to-', '')} 100%)`
+          }}
+        />
+      )}
+      
+      <div className={`relative mb-3`}>
+        <div className={`w-20 h-20 rounded-2xl flex items-center justify-center text-3xl bg-gradient-to-br ${rarityColors[rarity]} border-2 ${rarityBorders[rarity]} shadow-xl transition-all duration-500 ${
+          isHovered ? 'rotate-6 scale-110' : ''
+        }`}>
           {unlocked ? icon : '🔒'}
         </div>
+        
         {unlocked && (
           <>
-            <div className="absolute -top-1 -right-1">
-              <Sparkles className="w-4 h-4 text-yellow-400" />
+            <div className="absolute -top-2 -right-2">
+              <Sparkles className="w-5 h-5 text-yellow-400 animate-pulse" />
             </div>
             {rank && (
-              <div className="absolute -top-2 -left-2 bg-red-500 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
+              <div className="absolute -top-3 -left-3 bg-red-500 text-white text-xs font-bold rounded-full w-8 h-8 flex items-center justify-center shadow-lg animate-bounce">
                 #{rank}
               </div>
             )}
           </>
         )}
       </div>
+      
       <div className="text-sm font-bold text-white mb-1">{name}</div>
       {description && (
-        <div className="text-xs text-[#A3A3A3] mb-2">{description}</div>
+        <div className="text-xs text-[#A3A3A3] mb-2 px-2">{description}</div>
       )}
       {metric && unlocked && (
-        <div className="text-xs font-semibold text-[#6C5CE7]">{metric}</div>
+        <div className="text-xs font-semibold text-[#6C5CE7] mb-2 px-2 py-1 bg-[#6C5CE7]/10 rounded-full">
+          {metric}
+        </div>
       )}
       {progress < 100 && (
-        <div className="mt-2 w-full bg-gray-700 rounded-full h-1">
+        <div className="mt-3 w-full bg-gray-700 rounded-full h-2 overflow-hidden">
           <div 
-            className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] h-1 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] h-2 rounded-full transition-all duration-1000"
             style={{ width: `${progress}%` }}
           />
         </div>
@@ -273,7 +338,7 @@ const CompanyAchievementBadge = ({
   );
 };
 
-// Username input component
+// Enhanced username input with premium styling
 const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) => void; isLoading: boolean }) => {
   const [inputValue, setInputValue] = useState('');
   const [isValid, setIsValid] = useState(true);
@@ -290,45 +355,66 @@ const UsernameInput = ({ onSubmit, isLoading }: { onSubmit: (username: string) =
   
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
-      <div className="bg-[#1a1a1f] rounded-xl p-6 border border-[#6C5CE7]/20 backdrop-blur-xl">
-        <h2 className="text-2xl font-bold text-white mb-4 text-center">Enter Your Roblox Username</h2>
+      <div className="bg-[#1a1a1f] rounded-2xl p-8 border border-[#6C5CE7]/20 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#6C5CE7]/5 to-[#00E5FF]/5"></div>
         
-        {isLoading ? (
-          <LoadingSpinner message="Finding your profile..." />
-        ) : (
-          <div className="space-y-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={inputValue}
-                onChange={(e) => {
-                  setInputValue(e.target.value);
-                  setIsValid(true);
-                }}
-                placeholder="Roblox username..."
-                className={`w-full px-4 py-3 bg-[#2a2a2f] border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-[#6C5CE7] transition-colors ${
-                  !isValid ? 'border-red-500' : 'border-[#6C5CE7]/30'
-                }`}
-                disabled={isLoading}
-              />
-              {!isValid && (
-                <p className="text-red-400 text-sm mt-1">Please enter a valid username</p>
-              )}
+        <div className="relative z-10">
+          <h2 className="text-3xl font-bold text-white mb-2 text-center bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
+            Enter Your Roblox Username
+          </h2>
+          <p className="text-[#A3A3A3] text-center mb-6">Discover your 2025 gaming journey</p>
+          
+          {isLoading ? (
+            <LoadingSpinner message="Finding your profile..." />
+          ) : (
+            <div className="space-y-6">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <Gamepad2 className="w-5 h-5 text-[#6C5CE7]" />
+                </div>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => {
+                    setInputValue(e.target.value);
+                    setIsValid(true);
+                  }}
+                  placeholder="Roblox username..."
+                  className={`w-full pl-12 pr-4 py-4 bg-[#2a2a2f] border-2 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#6C5CE7] transition-all duration-300 ${
+                    !isValid ? 'border-red-500' : 'border-[#6C5CE7]/30'
+                  }`}
+                  disabled={isLoading}
+                />
+                {!isValid && (
+                  <p className="text-red-400 text-sm mt-2 flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    Please enter a valid username
+                  </p>
+                )}
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isLoading || !inputValue.trim()}
+                className="w-full py-4 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-bold rounded-xl hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:scale-100 shadow-lg hover:shadow-xl"
+              >
+                <span className="flex items-center justify-center gap-2">
+                  <Trophy className="w-5 h-5" />
+                  {isLoading ? 'Loading...' : 'View My 2025 Wrapped'}
+                </span>
+              </button>
+              
+              <div className="text-center">
+                <APIStatusIndicator status="loading" />
+              </div>
             </div>
-            
-            <button
-              type="submit"
-              disabled={isLoading || !inputValue.trim()}
-              className="w-full py-3 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-lg hover:opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-105 disabled:scale-100"
-            >
-              {isLoading ? 'Loading...' : 'View My 2025 Wrapped'}
-            </button>
-            
-            <div className="text-center">
-              <APIStatusIndicator status="loading" />
-            </div>
-          </div>
-        )}
+          )}
+        </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-2 right-2 w-3 h-3 bg-[#6C5CE7] rounded-full opacity-20"></div>
+        <div className="absolute bottom-2 left-2 w-2 h-2 bg-[#00E5FF] rounded-full opacity-20"></div>
       </div>
     </form>
   );
@@ -359,278 +445,28 @@ const SimpleMiniGame = ({ score, onScoreChange }: {
   );
 };
 
-// Roblox API service with enhanced CORS handling
+// Roblox API service using backend endpoint
 class RobloxAPI {
-  private static readonly USERS_URL = 'https://users.roblox.com/v1/users';
-  private static readonly FRIENDS_URL = 'https://friends.roblox.com/v1/users';
-  private static readonly GROUPS_URL = 'https://groups.roblox.com/v2/groups';
-  private static readonly THUMBNAIL_URL = 'https://thumbnails.roblox.com/v1/users';
-  private static readonly GAMES_URL = 'https://games.roblox.com/v1/games';
-  private static readonly GROUP_ID = 35390256;
+  private static readonly API_BASE = '/api';
   
-  // Enhanced proxy list with working alternatives
-  private static readonly PROXIES = [
-    {
-      url: 'https://api.codetabs.io/v1/proxy?quest=',
-      type: 'query'
-    },
-    {
-      url: 'https://corsproxy.io/?',
-      type: 'direct'
-    },
-    {
-      url: 'https://api.allorigins.win/raw?url=',
-      type: 'direct'
-    },
-    {
-      url: 'https://thingproxy.freeboard.io/fetch/',
-      type: 'direct'
-    },
-    {
-      url: 'https://cors-anywhere.herokuapp.com/',
-      type: 'direct'
-    }
-  ];
-  
-  // Helper method to try different proxy configurations
-  private static async tryProxyRequest(url: string, options: RequestInit = {}, proxyIndex = 0): Promise<Response | null> {
-    if (proxyIndex >= this.PROXIES.length) return null;
-    
-    const proxy = this.PROXIES[proxyIndex];
-    const proxyUrl = proxy.type === 'query' 
-      ? `${proxy.url}${encodeURIComponent(url)}`
-      : `${proxy.url}${url}`;
-    
+  static async getWrappedData(username: string) {
     try {
-      console.log(`Trying proxy ${proxyIndex + 1}/${this.PROXIES.length}: ${proxy.url}`);
+      console.log(`Fetching wrapped data for: ${username}`);
       
-      const response = await fetch(proxyUrl, {
-        ...options,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest',
-          'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
-          ...options.headers
-        }
-      });
+      const response = await fetch(`${this.API_BASE}/roblox-wrapped?username=${encodeURIComponent(username)}`);
       
-      if (response.ok) {
-        console.log(`Proxy ${proxyIndex + 1} successful`);
-        return response;
-      } else {
-        console.log(`Proxy ${proxyIndex + 1} failed with status: ${response.status}`);
-        return this.tryProxyRequest(url, options, proxyIndex + 1);
-      }
-    } catch (error) {
-      console.log(`Proxy ${proxyIndex + 1} error:`, error);
-      return this.tryProxyRequest(url, options, proxyIndex + 1);
-    }
-  }
-  
-  static async getUserIdFromUsername(username: string) {
-    try {
-      const apiUrl = `${this.USERS_URL}/usernames/users`;
-      const requestBody = JSON.stringify({
-        usernames: [username],
-        excludeBannedUsers: false
-      });
-      
-      const response = await this.tryProxyRequest(apiUrl, {
-        method: 'POST',
-        body: requestBody
-      });
-      
-      if (response) {
-        const data = await response.json();
-        if (data.data && data.data.length > 0) {
-          return data.data[0].id;
-        }
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
       }
       
-      console.log('All proxies failed for getUserIdFromUsername');
-      return null;
+      const data = await response.json();
+      console.log('API response:', data);
+      
+      return data;
     } catch (error) {
-      console.error('Error in getUserIdFromUsername:', error);
-      return null;
+      console.error('Error fetching wrapped data:', error);
+      throw error;
     }
-  }
-  
-  static async getPlayerData(userId: number) {
-    try {
-      // Try to get user info
-      const userResponse = await this.tryProxyRequest(`${this.USERS_URL}/${userId}`);
-      if (!userResponse) return null;
-      const userData = await userResponse.json();
-      
-      // Get avatar thumbnail
-      const thumbnailResponse = await this.tryProxyRequest(
-        `${this.THUMBNAIL_URL}/${userId}/avatar-headshot?size=150x150&format=Png&isCircular=true`
-      );
-      const thumbnailData = thumbnailResponse?.ok ? await thumbnailResponse.json() : { data: [] };
-      
-      // Get user groups
-      const userGroupsResponse = await this.tryProxyRequest(`${this.GROUPS_URL}/${userId}/groups/roles`);
-      const userGroupsData = userGroupsResponse?.ok ? await userGroupsResponse.json() : { data: [] };
-      
-      // Get friends
-      const friendsResponse = await this.tryProxyRequest(`${this.FRIENDS_URL}/${userId}/friends`);
-      const friendsData = friendsResponse?.ok ? await friendsResponse.json() : { data: [] };
-      
-      // Get group membership
-      const groupMembershipResponse = await this.tryProxyRequest(
-        `${this.GROUPS_URL}/${this.GROUP_ID}/memberships?userId=${userId}`
-      );
-      const groupMembershipData = groupMembershipResponse?.ok ? await groupMembershipResponse.json() : { data: [] };
-      
-      const userGroupRole = groupMembershipData.data?.find((membership: any) => membership.user?.userId === userId);
-
-      return {
-        id: userData.id,
-        name: userData.name,
-        displayName: userData.displayName,
-        description: userData.description || '',
-        created: userData.created,
-        isVerified: userData.hasVerifiedBadge || false,
-        isDeleted: userData.isDeleted || false,
-        externalAppDisplayName: userData.externalAppDisplayName || '',
-        avatarUrl: thumbnailData.data?.[0]?.imageUrl || `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
-        groupRank: userGroupRole?.role?.name || 'Guest',
-        isGroupMember: userGroupRole ? true : false,
-        groupRole: userGroupRole?.role,
-        groups: userGroupsData.data || [],
-        friends: friendsData.data || [],
-        totalFriends: friendsData.data?.length || 0,
-        totalGroups: userGroupsData.data?.length || 0
-      };
-    } catch (error) {
-      console.error('Error in getPlayerData:', error);
-      return null;
-    }
-  }
-  
-  static async getGameStats(universeId: number = 35390256) {
-    try {
-      const apiUrl = `${this.GAMES_URL}?universeIds=${universeId}`;
-      
-      const response = await this.tryProxyRequest(apiUrl);
-      
-      if (response) {
-        const data = await response.json();
-        if (data.data && data.data.length > 0) {
-          const gameData = data.data[0];
-          return {
-            visits: gameData.visits || 0,
-            playing: gameData.playing || 0,
-            favorites: gameData.favoritedCount || 0,
-            rating: 0,
-            name: gameData.name || 'Atlanta High School Roleplay',
-            description: gameData.description || '',
-            created: gameData.created,
-            updated: gameData.updated,
-            price: gameData.price || 0,
-            maxPlayers: gameData.maxPlayers || 0,
-            creator: gameData.creator?.name || 'Unknown',
-            genre: gameData.genre || 'Roleplay'
-          };
-        }
-      }
-      
-      console.log('All proxies failed for getGameStats, using enhanced mock data');
-      return this.getEnhancedMockGameData();
-    } catch (error) {
-      console.error('Error in getGameStats:', error);
-      return this.getEnhancedMockGameData();
-    }
-  }
-  
-  static async getGameVotes(universeId: number = 35390256) {
-    try {
-      const apiUrl = `${this.GAMES_URL}/votes?universeIds=${universeId}`;
-      
-      const response = await this.tryProxyRequest(apiUrl);
-      
-      if (response) {
-        const data = await response.json();
-        if (data.data && data.data.length > 0) {
-          const voteData = data.data[0];
-          const totalVotes = (voteData.upVotes || 0) + (voteData.downVotes || 0);
-          const rating = totalVotes > 0 ? ((voteData.upVotes || 0) / totalVotes) * 5 : 0;
-          
-          return {
-            upVotes: voteData.upVotes || 0,
-            downVotes: voteData.downVotes || 0,
-            totalVotes,
-            rating: parseFloat(rating.toFixed(1))
-          };
-        }
-      }
-      
-      console.log('All proxies failed for getGameVotes, using enhanced mock data');
-      return this.getEnhancedMockVoteData();
-    } catch (error) {
-      console.error('Error in getGameVotes:', error);
-      return this.getEnhancedMockVoteData();
-    }
-  }
-  
-  static async getFavoritesCount(universeId: number = 35390256) {
-    try {
-      const apiUrl = `${this.GAMES_URL}/${universeId}/favorites/count`;
-      
-      const response = await this.tryProxyRequest(apiUrl);
-      
-      if (response) {
-        const data = await response.json();
-        return {
-          favoritesCount: data.favoritesCount || 0
-        };
-      }
-      
-      console.log('All proxies failed for getFavoritesCount, using enhanced mock data');
-      return this.getEnhancedMockFavoritesData();
-    } catch (error) {
-      console.error('Error in getFavoritesCount:', error);
-      return this.getEnhancedMockFavoritesData();
-    }
-  }
-  
-  // Enhanced mock data methods with more realistic values
-  private static getEnhancedMockGameData() {
-    return {
-      visits: 127843,
-      playing: 342,
-      favorites: 28947,
-      rating: 4.7,
-      name: 'Atlanta High School Roleplay',
-      description: 'Experience authentic high school life in Atlanta! Join as a student, teacher, or staff member. Attend classes, join clubs, participate in events, and create your own story in our immersive roleplay community.',
-      created: '2023-01-15T08:00:00.000Z',
-      updated: new Date().toISOString(),
-      price: 0,
-      maxPlayers: 60,
-      creator: 'AtlantaHSDevelopment',
-      genre: 'Roleplay'
-    };
-  }
-  
-  private static getEnhancedMockVoteData() {
-    const upVotes = 15420;
-    const downVotes = 890;
-    const totalVotes = upVotes + downVotes;
-    const rating = (upVotes / totalVotes) * 5;
-    
-    return {
-      upVotes,
-      downVotes,
-      totalVotes,
-      rating: parseFloat(rating.toFixed(1))
-    };
-  }
-  
-  private static getEnhancedMockFavoritesData() {
-    return {
-      favoritesCount: 28947
-    };
   }
 }
 
@@ -678,135 +514,70 @@ const WrapUp2025 = () => {
     setApiStatus('loading');
     setUsername(submittedUsername);
     
-    // Generate random rankings for company achievements
-    const rankings = {
-      fireAlarmRank: Math.floor(Math.random() * 50) + 1,
-      drillRank: Math.floor(Math.random() * 100) + 1,
-      attendanceRank: Math.floor(Math.random() * 200) + 1,
-      socialRank: Math.floor(Math.random() * 150) + 1
-    };
-    setPlayerRankings(rankings);
-    
     try {
-      const userId = await RobloxAPI.getUserIdFromUsername(submittedUsername);
+      const response = await RobloxAPI.getWrappedData(submittedUsername);
       
-      if (!userId) {
-        setApiStatus('error');
-        const mockPlayerData = {
-          id: Math.floor(Math.random() * 1000000000),
-          name: submittedUsername,
-          displayName: submittedUsername,
-          description: 'Demo user - API unavailable',
-          created: new Date().toISOString(),
-          isVerified: false,
-          isDeleted: false,
-          externalAppDisplayName: '',
-          avatarUrl: `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
-          groupRank: 'Member',
-          isGroupMember: false,
-          groupRole: null,
-          groups: [],
-          friends: [],
-          totalFriends: Math.floor(Math.random() * 100),
-          totalGroups: Math.floor(Math.random() * 5)
-        };
-        
-        setPlayerData(mockPlayerData);
-        setCounters(prev => ({
-          ...prev,
-          friends: mockPlayerData.totalFriends,
-          groups: mockPlayerData.totalGroups,
-          accountAge: Math.floor(Math.random() * 5) + 1,
-          alarmsPulled: Math.floor(Math.random() * 3000) + 500,
-          drillsCompleted: Math.floor(Math.random() * 200) + 50,
-          timePlayed: Math.floor(Math.random() * 300) + 100,
-          achievements: Math.floor(Math.random() * 40) + 10
-        }));
-        
-        setShowUsernameInput(false);
-        setIsFetchingData(false);
-        setLoadingStats(false);
-        return;
-      }
-      
-      const playerInfo = await RobloxAPI.getPlayerData(userId);
-      const gameStats = await RobloxAPI.getGameStats();
-      const gameVotes = await RobloxAPI.getGameVotes();
-      const favoritesCount = await RobloxAPI.getFavoritesCount();
-      
-      setGameData({
-        ...gameStats,
-        ...gameVotes,
-        ...favoritesCount
-      });
-      
-      if (playerInfo) {
-        setApiStatus('success');
-        setPlayerData(playerInfo);
-        
-        // Generate enhanced stats based on group membership and rankings
-        const isGroupMember = playerInfo.isGroupMember;
-        const baseMultiplier = isGroupMember ? 2.5 : 1.0;
+      if (response.success) {
+        setApiStatus(response.apiStatus || 'success');
+        setPlayerData(response.user);
+        setGameData(response.game);
+        setPlayerRankings({
+          fireAlarmRank: response.stats.fireAlarmRank,
+          drillRank: response.stats.drillRank,
+          attendanceRank: response.stats.attendanceRank,
+          socialRank: response.stats.socialRank
+        });
         
         setCounters(prev => ({
           ...prev,
-          friends: playerInfo.totalFriends,
-          groups: playerInfo.totalGroups,
-          accountAge: Math.floor((Date.now() - new Date(playerInfo.created).getTime()) / (1000 * 60 * 60 * 24 * 365)),
-          alarmsPulled: Math.floor((Math.random() * 4000 + 1000) * baseMultiplier),
-          drillsCompleted: Math.floor((Math.random() * 300 + 100) * baseMultiplier),
-          timePlayed: Math.floor((Math.random() * 400 + 150) * baseMultiplier),
-          achievements: Math.floor((Math.random() * 50 + 20) * baseMultiplier),
-          robloxVisits: gameStats.visits,
-          robloxPlaying: gameStats.playing,
-          robloxFavorites: favoritesCount.favoritesCount,
-          robloxRating: gameVotes.rating
+          friends: response.user.totalFriends,
+          groups: response.user.totalGroups,
+          accountAge: response.user.accountAge,
+          alarmsPulled: response.stats.alarmsPulled,
+          drillsCompleted: response.stats.drillsCompleted,
+          timePlayed: response.stats.timePlayed,
+          achievements: response.stats.achievements,
+          robloxVisits: response.game.visits,
+          robloxPlaying: response.game.playing,
+          robloxFavorites: response.game.favorites,
+          robloxRating: response.game.rating
         }));
         
         setShowUsernameInput(false);
       } else {
-        setApiStatus('partial');
-        const mockPlayerData = {
-          id: userId,
-          name: submittedUsername,
-          displayName: submittedUsername,
-          description: 'Demo user - Partial API failure',
-          created: new Date().toISOString(),
-          isVerified: false,
-          isDeleted: false,
-          externalAppDisplayName: '',
-          avatarUrl: `https://tr.rbxcdn.com/${Math.random().toString(36).substring(7)}/150/150/Image`,
-          groupRank: 'Member',
-          isGroupMember: false,
-          groupRole: null,
-          groups: [],
-          friends: [],
-          totalFriends: Math.floor(Math.random() * 100),
-          totalGroups: Math.floor(Math.random() * 5)
-        };
+        // Handle API error with mock data
+        setApiStatus('error');
+        setPlayerData(response.user);
+        setGameData(response.game);
+        setPlayerRankings({
+          fireAlarmRank: response.stats.fireAlarmRank,
+          drillRank: response.stats.drillRank,
+          attendanceRank: response.stats.attendanceRank,
+          socialRank: response.stats.socialRank
+        });
         
-        setPlayerData(mockPlayerData);
         setCounters(prev => ({
           ...prev,
-          friends: mockPlayerData.totalFriends,
-          groups: mockPlayerData.totalGroups,
-          accountAge: Math.floor(Math.random() * 5) + 1,
-          alarmsPulled: Math.floor(Math.random() * 3000) + 500,
-          drillsCompleted: Math.floor(Math.random() * 200) + 50,
-          timePlayed: Math.floor(Math.random() * 300) + 100,
-          achievements: Math.floor(Math.random() * 40) + 10,
-          robloxVisits: gameStats.visits,
-          robloxPlaying: gameStats.playing,
-          robloxFavorites: favoritesCount.favoritesCount,
-          robloxRating: gameVotes.rating
+          friends: response.user.totalFriends,
+          groups: response.user.totalGroups,
+          accountAge: response.user.accountAge,
+          alarmsPulled: response.stats.alarmsPulled,
+          drillsCompleted: response.stats.drillsCompleted,
+          timePlayed: response.stats.timePlayed,
+          achievements: response.stats.achievements,
+          robloxVisits: response.game.visits,
+          robloxPlaying: response.game.playing,
+          robloxFavorites: response.game.favorites,
+          robloxRating: response.game.rating
         }));
         
         setShowUsernameInput(false);
       }
     } catch (error) {
+      console.error('Error in handleUsernameSubmit:', error);
       setApiStatus('error');
-      console.error('API Error:', error);
       
+      // Fallback to mock data
       const mockPlayerData = {
         id: Math.floor(Math.random() * 1000000000),
         name: submittedUsername,
@@ -823,19 +594,39 @@ const WrapUp2025 = () => {
         groups: [],
         friends: [],
         totalFriends: Math.floor(Math.random() * 100),
-        totalGroups: Math.floor(Math.random() * 5)
+        totalGroups: Math.floor(Math.random() * 5),
+        accountAge: Math.floor(Math.random() * 5) + 1
+      };
+      
+      const mockGameData = {
+        visits: 127843,
+        playing: 342,
+        favorites: 28947,
+        rating: 4.7,
+        name: 'Atlanta High School Roleplay',
+        description: 'Experience authentic high school life in Atlanta!',
+        creator: 'AtlantaHSDevelopment',
+        genre: 'Roleplay',
+        maxPlayers: 60,
+        price: 0
       };
       
       setPlayerData(mockPlayerData);
+      setGameData(mockGameData);
+      
       setCounters(prev => ({
         ...prev,
         friends: mockPlayerData.totalFriends,
         groups: mockPlayerData.totalGroups,
-        accountAge: Math.floor(Math.random() * 5) + 1,
+        accountAge: mockPlayerData.accountAge,
         alarmsPulled: Math.floor(Math.random() * 3000) + 500,
         drillsCompleted: Math.floor(Math.random() * 200) + 50,
         timePlayed: Math.floor(Math.random() * 300) + 100,
-        achievements: Math.floor(Math.random() * 40) + 10
+        achievements: Math.floor(Math.random() * 40) + 10,
+        robloxVisits: mockGameData.visits,
+        robloxPlaying: mockGameData.playing,
+        robloxFavorites: mockGameData.favorites,
+        robloxRating: mockGameData.rating
       }));
       
       setShowUsernameInput(false);
@@ -882,7 +673,9 @@ const WrapUp2025 = () => {
   }, []);
   
   const pages = useMemo(() => [
-    <div key="page-1" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11]">
+    <div key="page-1" className="min-h-screen flex items-center justify-center px-6 relative bg-[#0E0E11] overflow-hidden">
+      <ParticleSystem count={100} className="opacity-30" />
+      
       <div className="max-w-4xl mx-auto relative z-20">
         {showUsernameInput ? (
           <UsernameInput onSubmit={handleUsernameSubmit} isLoading={isFetchingData} />
@@ -890,27 +683,33 @@ const WrapUp2025 = () => {
           <>
             <div className="mb-12">
               {playerData && (
-                <div className="bg-[#1a1a1f] rounded-xl p-4 mb-8 border border-[#6C5CE7]/20">
-                  <div className="flex items-center gap-3">
-                    <img 
-                      src={playerData.avatarUrl} 
-                      alt={playerData.displayName} 
-                      className="w-16 h-16 rounded-xl border-2 border-[#6C5CE7] shadow-lg shadow-[#6C5CE7]/20"
-                    />
+                <div className="bg-[#1a1a1f] rounded-2xl p-6 mb-8 border border-[#6C5CE7]/20 backdrop-blur-xl shadow-2xl relative overflow-hidden">
+                  {/* Background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#6C5CE7]/10 to-[#00E5FF]/10"></div>
+                  
+                  <div className="relative z-10 flex items-center gap-4">
+                    <div className="relative">
+                      <img 
+                        src={playerData.avatarUrl} 
+                        alt={playerData.displayName} 
+                        className="w-20 h-20 rounded-2xl border-3 border-[#6C5CE7] shadow-xl shadow-[#6C5CE7]/30"
+                      />
+                      <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-[#1a1a1f]"></div>
+                    </div>
                     <div className="text-left flex-1">
-                      <h3 className="text-lg font-bold text-white">{playerData.displayName}</h3>
-                      <p className="text-[#A3A3A3] text-sm">@{playerData.name}</p>
-                      <div className={`text-xs px-3 py-1 rounded-full inline-block mt-2 font-medium ${
+                      <h3 className="text-2xl font-bold text-white mb-1">{playerData.displayName}</h3>
+                      <p className="text-[#A3A3A3] text-sm mb-3">@{playerData.name}</p>
+                      <div className={`text-sm px-4 py-2 rounded-full inline-block font-semibold shadow-lg ${
                         playerData.isGroupMember 
-                          ? 'bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white shadow-lg' 
+                          ? 'bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white' 
                           : 'bg-gray-600 text-gray-300'
                       }`}>
                         {playerData.groupRank === 'Guest' ? 'Not in Group' : playerData.groupRank}
                       </div>
                       {playerData.isVerified && (
-                        <div className="flex items-center gap-1 mt-1">
-                          <Trophy className="w-3 h-3 text-blue-400" />
-                          <span className="text-xs text-blue-400">Verified</span>
+                        <div className="flex items-center gap-2 mt-2">
+                          <Shield className="w-4 h-4 text-blue-400" />
+                          <span className="text-sm text-blue-400 font-medium">Verified User</span>
                         </div>
                       )}
                     </div>
@@ -918,22 +717,46 @@ const WrapUp2025 = () => {
                 </div>
               )}
               
-              <h1 className="text-5xl md:text-7xl font-bold text-center mb-6 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] bg-clip-text text-transparent">
-                2025 Wrapped
-              </h1>
-              <p className="text-xl text-center text-[#A3A3A3] mb-8 max-w-2xl mx-auto">
-                Your year in review at Atlanta High School Roleplay
-              </p>
+              <div className="text-center mb-12">
+                <h1 className="text-6xl md:text-8xl font-bold mb-6 bg-gradient-to-r from-[#6C5CE7] via-[#00E5FF] to-purple-400 bg-clip-text text-transparent animate-gradient">
+                  2025 Wrapped
+                </h1>
+                <p className="text-2xl text-[#A3A3A3] mb-4 max-w-3xl mx-auto leading-relaxed">
+                  Your incredible year in review at
+                </p>
+                <div className="flex items-center justify-center gap-3 mb-8">
+                  <Crown className="w-6 h-6 text-[#6C5CE7]" />
+                  <span className="text-2xl font-bold text-white">Atlanta High School Roleplay</span>
+                  <Crown className="w-6 h-6 text-[#00E5FF]" />
+                </div>
+                
+                {/* Quick stats preview */}
+                <div className="flex justify-center gap-8 mb-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-[#6C5CE7]">{counters.alarmsPulled.toLocaleString()}</div>
+                    <div className="text-sm text-[#A3A3A3]">Fire Alarms</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-[#00E5FF]">{counters.drillsCompleted.toLocaleString()}</div>
+                    <div className="text-sm text-[#A3A3A3]">Drills</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-purple-400">{counters.timePlayed}h</div>
+                    <div className="text-sm text-[#A3A3A3]">Time Played</div>
+                  </div>
+                </div>
+              </div>
             </div>
             
             <div className="text-center">
               <button 
                 onClick={() => setCurrentPage(1)}
-                className="px-8 py-4 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-semibold rounded-lg hover:opacity-90 transition-opacity flex items-center gap-2 mx-auto"
+                className="px-12 py-5 bg-gradient-to-r from-[#6C5CE7] to-[#00E5FF] text-white font-bold rounded-2xl hover:opacity-90 transition-all duration-300 flex items-center gap-3 mx-auto shadow-xl hover:shadow-2xl transform hover:scale-105"
               >
-                See Your Stats
-                <ChevronRight className="w-5 h-5" />
+                <span className="text-lg">View Your Stats</span>
+                <ChevronRight className="w-6 h-6" />
               </button>
+              <p className="text-[#A3A3A3] text-sm mt-4">Press → or Space to continue</p>
             </div>
           </>
         )}
